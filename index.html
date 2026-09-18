@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wire Birds</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #f4efe6;
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+      .caption {
+        position: fixed;
+        left: 24px;
+        bottom: 22px;
+        z-index: 2;
+        pointer-events: none;
+        color: #2c2a28;
+        mix-blend-mode: multiply;
+      }
+      .caption h1 {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: lowercase;
+      }
+      .caption p {
+        margin: 4px 0 0;
+        font-size: 12px;
+        opacity: 0.55;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="scene" aria-label="Procedurally generated birds sitting on a wire"></canvas>
+    <div class="caption">
+      <h1>birds on a wire</h1>
+      <p>click or press space to shuffle</p>
+    </div>
+    <script src="birds.js"></script>
+  </body>
+</html>
