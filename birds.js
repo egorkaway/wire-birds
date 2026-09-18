@@ -16,14 +16,25 @@
     { body: "#22223b", belly: "#c9ada7", head: "#4a4e69", wing: "#22223b", tail: "#9a8c98", crest: "#f2e9e4", beak: "#c9ada7", feet: "#6d597a", eye: "#f2e9e4" },
   ];
 
-  const SKIES = [
-    { sky: "#f4efe6", ink: "#2c2a28", wire: "#2c2a28", sun: "#f2c14e", night: false, outline: "#2a2724" },
-    { sky: "#e7f2f8", ink: "#24323c", wire: "#24323c", sun: "#ffe08a", night: false, outline: "#24323c" },
-    { sky: "#f8ebe7", ink: "#3a2a28", wire: "#3a2a28", sun: "#ff8a65", night: false, outline: "#3a2a28" },
-    { sky: "#e8f0ea", ink: "#24332a", wire: "#24332a", sun: "#ffe08a", night: false, outline: "#24332a" },
-    { sky: "#ede8f4", ink: "#2d2740", wire: "#2d2740", sun: "#f7c1dd", night: false, outline: "#2d2740" },
-    { sky: "#1a2332", ink: "#e8e0d4", wire: "#d9cbb3", sun: "#f0e6c8", night: true, outline: "#f4ead8" },
-    { sky: "#241b2e", ink: "#f0e6dc", wire: "#e2d3c0", sun: "#f6d7a1", night: true, outline: "#f4ead8" },
+  const SUN_COLOR = "#f2c14e";
+  const SUN_HORIZON = "#e85d04";
+  const MOON_COLOR = "#f0e6c8";
+  const SUNRISE = 0.25;
+  const SUNSET = 0.75;
+
+  const SKY_STOPS = [
+    { t: 0.0, sky: "#0b1020", ink: "#e8e0d4", wire: "#d9cbb3", outline: "#f4ead8", night: true },
+    { t: 0.18, sky: "#1a2744", ink: "#e8e0d4", wire: "#d9cbb3", outline: "#f4ead8", night: true },
+    { t: 0.22, sky: "#c45c3e", ink: "#2c2a28", wire: "#3a2a28", outline: "#2a2724", night: false },
+    { t: 0.25, sky: "#f4a261", ink: "#2c2a28", wire: "#3a2a28", outline: "#2a2724", night: false },
+    { t: 0.3, sky: "#e7f2f8", ink: "#24323c", wire: "#24323c", outline: "#24323c", night: false },
+    { t: 0.5, sky: "#d8eef8", ink: "#24323c", wire: "#24323c", outline: "#24323c", night: false },
+    { t: 0.7, sky: "#e7f2f8", ink: "#24323c", wire: "#24323c", outline: "#24323c", night: false },
+    { t: 0.74, sky: "#f4a261", ink: "#2c2a28", wire: "#3a2a28", outline: "#2a2724", night: false },
+    { t: 0.77, sky: "#c45c3e", ink: "#2c2a28", wire: "#3a2a28", outline: "#2a2724", night: false },
+    { t: 0.81, sky: "#2a2444", ink: "#e8e0d4", wire: "#d9cbb3", outline: "#f4ead8", night: true },
+    { t: 0.88, sky: "#12182a", ink: "#e8e0d4", wire: "#d9cbb3", outline: "#f4ead8", night: true },
+    { t: 1.0, sky: "#0b1020", ink: "#e8e0d4", wire: "#d9cbb3", outline: "#f4ead8", night: true },
   ];
 
   let seed = readSeed();
@@ -33,6 +44,14 @@
   let start = performance.now();
   let paintPass = "paint";
   let outlineColor = "#2a2724";
+  let clock = {
+    display: 0.42,
+    from: 0.42,
+    to: 0.42,
+    startedAt: 0,
+    duration: 0,
+    ready: false,
+  };
 
   function paint(ctx, color) {
     ctx.lineJoin = "round";
@@ -77,6 +96,119 @@
     return `hsl(${((h % 360) + 360) % 360} ${s}% ${l}%)`;
   }
 
+  function wrapUnit(t) {
+    t %= 1;
+    return t < 0 ? t + 1 : t;
+  }
+
+  function hexToRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+
+  function rgbToHex({ r, g, b }) {
+    return `#${[r, g, b].map((v) => Math.round(v).toString(16).padStart(2, "0")).join("")}`;
+  }
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function lerpHex(a, b, t) {
+    const A = hexToRgb(a);
+    const B = hexToRgb(b);
+    return rgbToHex({
+      r: lerp(A.r, B.r, t),
+      g: lerp(A.g, B.g, t),
+      b: lerp(A.b, B.b, t),
+    });
+  }
+
+  function themeAt(t) {
+    t = wrapUnit(t);
+    let i = 0;
+    while (i < SKY_STOPS.length - 1 && SKY_STOPS[i + 1].t <= t) i += 1;
+    const a = SKY_STOPS[i];
+    const b = SKY_STOPS[i + 1];
+    const span = b.t - a.t || 1;
+    const u = Math.min(1, Math.max(0, (t - a.t) / span));
+    return {
+      sky: lerpHex(a.sky, b.sky, u),
+      ink: lerpHex(a.ink, b.ink, u),
+      wire: lerpHex(a.wire, b.wire, u),
+      outline: lerpHex(a.outline, b.outline, u),
+      night: u < 0.5 ? a.night : b.night,
+    };
+  }
+
+  function dayProgress(t) {
+    t = wrapUnit(t);
+    if (t < SUNRISE || t > SUNSET) return null;
+    return (t - SUNRISE) / (SUNSET - SUNRISE);
+  }
+
+  function nightProgress(t) {
+    t = wrapUnit(t);
+    const span = 1 - SUNSET + SUNRISE;
+    if (t >= SUNSET) return (t - SUNSET) / span;
+    if (t <= SUNRISE) return (t + 1 - SUNSET) / span;
+    return null;
+  }
+
+  function bodyOnArc(progress, w, h, radius) {
+    const x = w * (0.06 + 0.88 * progress);
+    const horizonY = h * 0.5;
+    const peakY = h * 0.13;
+    const y = horizonY - Math.sin(Math.PI * progress) * (horizonY - peakY);
+    return { x, y, r: radius };
+  }
+
+  function sunFill(altitude) {
+    const warmth = Math.min(1, altitude / 0.28);
+    return lerpHex(SUN_HORIZON, SUN_COLOR, warmth);
+  }
+
+  function crossesTwilight(from, to) {
+    const steps = 24;
+    for (let i = 0; i <= steps; i += 1) {
+      const t = wrapUnit(from + ((to - from) * i) / steps);
+      if ((t > 0.2 && t < 0.3) || (t > 0.7 && t < 0.82)) return true;
+    }
+    return false;
+  }
+
+  function tickClock(now) {
+    if (!clock.duration) return wrapUnit(clock.display);
+    const u = Math.min(1, (now - clock.startedAt) / clock.duration);
+    const eased = u * u * (3 - 2 * u);
+    const value = clock.from + (clock.to - clock.from) * eased;
+    clock.display = wrapUnit(value);
+    if (u >= 1) {
+      clock.from = clock.display;
+      clock.to = clock.display;
+      clock.duration = 0;
+    }
+    return clock.display;
+  }
+
+  function ensureClock(currentSeed) {
+    if (clock.ready) return;
+    const t = mulberry32(currentSeed ^ 0x9e3779b9)();
+    clock.display = t;
+    clock.from = t;
+    clock.to = t;
+    clock.ready = true;
+  }
+
+  function advanceClock(now, rng) {
+    const current = tickClock(now);
+    const advance = range(rng, 0.16, 0.48);
+    clock.from = current;
+    clock.to = current + advance;
+    clock.startedAt = now;
+    clock.duration = 1600 + advance * 3600 + (crossesTwilight(clock.from, clock.to) ? 1100 : 0);
+  }
+
   function palette(rng) {
     if (chance(rng, 0.42)) return { ...pick(rng, CURATED) };
     const h = rng() * 360;
@@ -112,6 +244,16 @@
   function ellipse(ctx, x, y, rx, ry, rot = 0) {
     ctx.beginPath();
     ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2);
+    finish(ctx);
+  }
+
+  function poly(ctx, points) {
+    ctx.beginPath();
+    ctx.moveTo(points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i += 1) {
+      ctx.lineTo(points[i][0], points[i][1]);
+    }
+    ctx.closePath();
     finish(ctx);
   }
 
@@ -224,13 +366,15 @@
     if (other.species === "crow") {
       other.colors = crowPalette();
       other.beakHook = true;
-      other.beakLen = range(rng, 12, 17);
-      other.beakH = range(rng, 2.6, 3.4);
+      other.beakLen = range(rng, 14, 19);
+      other.beakH = range(rng, 2.4, 3.2);
       other.tail = "fan";
-      other.tailLen = range(rng, 18, 26);
+      other.tailLen = range(rng, 22, 30);
       other.belly = false;
-      other.pose = chance(rng, 0.45) ? "hunched" : "upright";
-      other.scale *= 1.08;
+      other.pose = chance(rng, 0.55) ? "hunched" : "upright";
+      other.bodyW = range(rng, 20, 26);
+      other.bodyH = range(rng, 11, 15);
+      other.scale *= 1.16;
     } else {
       other.colors = seagullPalette();
       other.beakHook = false;
@@ -265,6 +409,9 @@
     const s = bird.scale;
     if (bird.species === "owl" || bird.view === "front") {
       return s * Math.max(bird.headR * 2.6, bird.bodyW * 1.7) + 20;
+    }
+    if (bird.species === "crow") {
+      return s * (bird.bodyW * 2.2 + bird.tailLen * 0.7 + bird.beakLen * 0.7) + 22;
     }
     return s * (bird.bodyW * 1.8 + bird.tailLen * 0.4 + bird.beakLen * 0.45) + 20;
   }
@@ -306,7 +453,6 @@
 
   function createScene(currentSeed, w, h) {
     const rng = mulberry32(currentSeed);
-    const theme = pick(rng, SKIES);
     const sizeMul = Math.min(1.2, Math.max(0.72, w / 920));
     const maxCount = Math.max(1, Math.min(8, Math.floor((w - 72) / 92)));
     const count = pickCount(rng, maxCount);
@@ -315,14 +461,8 @@
     placeAlongWire(rng, birds, w);
     return {
       seed: currentSeed,
-      theme,
       wireY: h * 0.58,
       birds,
-      sun: {
-        x: range(rng, w * 0.12, w * 0.88),
-        y: range(rng, h * 0.12, h * 0.28),
-        r: range(rng, 18, 36),
-      },
     };
   }
 
@@ -645,9 +785,110 @@
     ctx.restore();
   }
 
+  function drawCrow(ctx, bird, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, time);
+    const hunched = bird.pose === "hunched" || bird.pose === "sleeping";
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+    const chest = [bodyX + w * 0.9, bodyY + h * 0.08];
+    const nape = [bodyX - w * 0.05, bodyY - h * 1.05];
+    const rump = [bodyX - w * 0.95, bodyY + h * 0.12];
+    const belly = [bodyX + w * 0.05, bodyY + h * 0.95];
+
+    paint(ctx, bird.colors.tail);
+    poly(ctx, [rump, [bodyX - w * 1.55, bodyY - h * 0.7], [bodyX - w * 0.35, bodyY - h * 0.2]]);
+    poly(ctx, [rump, [bodyX - w * 1.7, bodyY + h * 0.08], [bodyX - w * 0.4, bodyY + h * 0.32]]);
+    poly(ctx, [rump, [bodyX - w * 1.35, bodyY + h * 0.7], belly]);
+
+    drawFoot(ctx, -4.2, bird.colors, "side");
+
+    paint(ctx, bird.colors.body);
+    poly(ctx, [chest, nape, rump]);
+    poly(ctx, [chest, rump, belly]);
+
+    paint(ctx, bird.colors.wing);
+    poly(ctx, [
+      [bodyX - w * 0.05, bodyY - h * 0.15],
+      [bodyX + w * 0.62, bodyY + h * 0.12],
+      [bodyX - w * 0.45, bodyY + h * 0.72],
+    ]);
+    poly(ctx, [
+      [bodyX + w * 0.15, bodyY + h * 0.05],
+      [bodyX + w * 0.55, bodyY + h * 0.22],
+      [bodyX - w * 0.1, bodyY + h * 0.5],
+    ]);
+
+    drawFoot(ctx, 3.6, bird.colors, "side");
+
+    const hx = bodyX + w * 0.58;
+    const hy = bodyY - h * (hunched ? 0.38 : 0.62);
+
+    paint(ctx, bird.colors.head);
+    poly(ctx, [
+      [hx - bird.headR * 0.95, hy + bird.headR * 0.4],
+      [hx - bird.headR * 0.08, hy - bird.headR * 1.15],
+      [hx + bird.headR * 0.95, hy + bird.headR * 0.12],
+    ]);
+    poly(ctx, [
+      [hx - bird.headR * 0.95, hy + bird.headR * 0.4],
+      [hx + bird.headR * 0.95, hy + bird.headR * 0.12],
+      [hx + bird.headR * 0.15, hy + bird.headR * 0.85],
+    ]);
+
+    paint(ctx, bird.colors.beak);
+    poly(ctx, [
+      [hx + bird.headR * 0.55, hy - 0.4],
+      [hx + bird.headR * 0.55 + bird.beakLen * 1.15, hy + 2.2],
+      [hx + bird.headR * 0.28, hy + 3.6],
+    ]);
+
+    const ex = hx + bird.headR * 0.22;
+    const ey = hy - bird.headR * 0.05;
+    if (paintPass !== "halo") {
+      if (bird.pose === "sleeping" || blinkOn) {
+        ctx.strokeStyle = bird.colors.eye;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(ex - 2.4, ey);
+        ctx.lineTo(ex, ey + 1.6);
+        ctx.lineTo(ex + 2.4, ey);
+        ctx.stroke();
+      } else {
+        paint(ctx, bird.colors.eye);
+        poly(ctx, [
+          [ex, ey - 2.3],
+          [ex + 2.4, ey],
+          [ex, ey + 2.3],
+        ]);
+        poly(ctx, [
+          [ex, ey - 2.3],
+          [ex, ey + 2.3],
+          [ex - 2.4, ey],
+        ]);
+        paint(ctx, "#f0e6c8");
+        poly(ctx, [
+          [ex, ey - 1.1],
+          [ex + 1.15, ey],
+          [ex, ey + 1.1],
+        ]);
+        poly(ctx, [
+          [ex, ey - 1.1],
+          [ex, ey + 1.1],
+          [ex - 1.15, ey],
+        ]);
+      }
+    }
+    ctx.restore();
+  }
+
   function drawBirdShape(ctx, bird, time) {
     if (bird.species === "owl") {
       drawOwl(ctx, bird, time);
+      return;
+    }
+    if (bird.species === "crow") {
+      drawCrow(ctx, bird, time);
       return;
     }
     if (bird.view === "front") {
@@ -665,39 +906,68 @@
     drawBirdShape(ctx, bird, time);
   }
 
-  function drawWire(ctx, scene) {
-    ctx.strokeStyle = scene.theme.wire;
+  function drawWire(ctx, theme, wireY) {
+    ctx.strokeStyle = theme.wire;
     ctx.lineWidth = 2.4;
     ctx.lineCap = "butt";
     ctx.beginPath();
-    ctx.moveTo(0, scene.wireY);
-    ctx.lineTo(width, scene.wireY);
+    ctx.moveTo(0, wireY);
+    ctx.lineTo(width, wireY);
     ctx.stroke();
   }
 
-  function drawScene(time) {
-    if (!scene) return;
-    const { theme, birds, wireY, sun } = scene;
-    ctx.fillStyle = theme.sky;
-    ctx.fillRect(0, 0, width, height);
+  function drawCelestial(theme, tod) {
+    const sunP = dayProgress(tod);
+    const moonP = nightProgress(tod);
 
-    ctx.fillStyle = theme.sun;
-    ctx.beginPath();
-    ctx.arc(sun.x, sun.y, sun.r, 0, Math.PI * 2);
-    ctx.fill();
-    if (theme.night) {
-      ctx.fillStyle = theme.sky;
+    if (sunP != null) {
+      const pos = bodyOnArc(sunP, width, height, 30);
+      const altitude = Math.sin(Math.PI * sunP);
+      const glow = Math.max(0, 1 - altitude);
+      if (glow > 0.05) {
+        ctx.fillStyle = SUN_HORIZON;
+        ctx.globalAlpha = 0.18 * glow;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, pos.r * (1.6 + glow * 0.8), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      ctx.fillStyle = sunFill(altitude);
       ctx.beginPath();
-      ctx.arc(sun.x + sun.r * 0.38, sun.y - sun.r * 0.12, sun.r * 0.82, 0, Math.PI * 2);
+      ctx.arc(pos.x, pos.y, pos.r, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    drawWire(ctx, scene);
+    if (moonP != null) {
+      const pos = bodyOnArc(moonP, width, height, 26);
+      const fade = Math.min(1, Math.sin(Math.PI * moonP) / 0.18);
+      ctx.globalAlpha = Math.max(0, fade);
+      ctx.fillStyle = MOON_COLOR;
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, pos.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = theme.sky;
+      ctx.beginPath();
+      ctx.arc(pos.x + pos.r * 0.38, pos.y - pos.r * 0.12, pos.r * 0.82, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
 
-    for (const bird of birds) {
+  function drawScene(animTime, tod) {
+    if (!scene) return;
+    const theme = themeAt(tod);
+    applyTheme(theme);
+    ctx.fillStyle = theme.sky;
+    ctx.fillRect(0, 0, width, height);
+
+    drawCelestial(theme, tod);
+    drawWire(ctx, theme, scene.wireY);
+
+    for (const bird of scene.birds) {
       ctx.save();
-      ctx.translate(bird.t * width, wireY);
-      drawBird(ctx, bird, time, theme.outline);
+      ctx.translate(bird.t * width, scene.wireY);
+      drawBird(ctx, bird, animTime, theme.outline);
       ctx.restore();
     }
   }
@@ -711,25 +981,28 @@
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ensureClock(seed);
     scene = createScene(seed, width, height);
-    applyTheme();
+    applyTheme(themeAt(clock.display));
   }
 
-  function applyTheme() {
-    document.body.style.background = scene.theme.sky;
-    caption.style.color = scene.theme.ink;
-    caption.style.mixBlendMode = scene.theme.night ? "normal" : "multiply";
+  function applyTheme(theme) {
+    document.body.style.background = theme.sky;
+    caption.style.color = theme.ink;
+    caption.style.mixBlendMode = theme.night ? "normal" : "multiply";
   }
 
   function shuffle() {
+    const now = performance.now();
     seed = (Math.random() * 0xffffffff) >>> 0;
     history.replaceState(null, "", `#${seed}`);
     scene = createScene(seed, width, height);
-    applyTheme();
+    advanceClock(now, mulberry32(seed));
   }
 
   function loop(now) {
-    drawScene(now - start);
+    const tod = tickClock(now);
+    drawScene(now - start, tod);
     requestAnimationFrame(loop);
   }
 
@@ -748,7 +1021,6 @@
   window.addEventListener("hashchange", () => {
     seed = readSeed();
     scene = createScene(seed, width, height);
-    applyTheme();
   });
 
   history.replaceState(null, "", `#${seed}`);
