@@ -14,8 +14,7 @@ Open `index.html` locally, or drop the repo on [Netlify](https://www.netlify.com
   - **The Swallow (Swift)**, aerodynamic with scissor streamer tails and rust throat bib.
   - **The Kingfisher (Woodpecker)**, stout with a sharp spear beak, dagger crest, and white collar.
   - **The Pigeon (Dove)**, deep breast with iridescent neck sheen and wing bars.
-  - **Songbirds** with layered wing plumage, crests, and color accents.
-- **Dynamic Wire Sag & Spring Physics**: The wire sags naturally under bird weight (heavier for owls, crows, pigeons) and vibrates with a damped spring oscillation on landing or tapping.
+- **Minimal Straight Wire**: Clean, horizontal perch geometry where birds sit with dynamic individual hop & chirp physics.
 - **Avian Micro-Animations**: Snap-action saccadic head twitches, gentle breathing fluff, tail twitches, and floating concentric chirp ripples on singing birds.
 - **Interactive on Mobile & Desktop**: Tap individual birds to make them chirp and hop; tap the sky or press space to shuffle the flock.
 - **Sun, Moon & Twilight Shading**: East → west progression with sunrise/sunset golden hour and moonlight rim highlights on bird silhouettes.

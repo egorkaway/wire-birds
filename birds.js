@@ -45,7 +45,6 @@
   let start = performance.now();
   let paintPass = "paint";
   let outlineColor = "#2a2724";
-  let springs = [];
   let chirpRipples = [];
 
   let clock = {
@@ -707,17 +706,6 @@
     return { stars, clouds };
   }
 
-  function triggerSpring(xRatio, amp = 14) {
-    springs.push({
-      startT: performance.now(),
-      xRatio: Math.max(0.1, Math.min(0.9, xRatio)),
-      amp,
-      freq: 0.012,
-      decay: 0.0028,
-    });
-    if (springs.length > 5) springs.shift();
-  }
-
   function createScene(currentSeed, w, h) {
     const rng = mulberry32(currentSeed);
     const sizeMul = Math.min(1.2, Math.max(0.72, w / 920));
@@ -728,68 +716,23 @@
     placeAlongWire(rng, birds, w);
     const weather = makeWeather(rng, w, h);
     chirpRipples = [];
-    triggerSpring(0.5, 12);
 
     return {
       seed: currentSeed,
-      baseWireY: h * 0.58,
+      wireY: h * 0.58,
       birds,
       stars: weather.stars,
       clouds: weather.clouds,
     };
   }
 
-  // --- Dynamic Wire Sag & Spring Physics ---
-  function getWireDeflection(x, w, birds, animTime, now) {
-    const u = x / Math.max(1, w);
-    // Baseline natural catenary sag across the span
-    let sag = 8 * Math.sin(Math.PI * u);
-
-    // Local sag from perched bird weights
-    if (birds) {
-      for (const b of birds) {
-        const bx = b.t * w;
-        const dx = x - bx;
-        const weight = (b.weight || 1.0) * (b.scale || 1.0);
-        sag += weight * 4.2 * Math.exp(-(dx * dx) / (90 * 90));
-      }
-    }
-
-    // Dynamic spring harmonic oscillations
-    for (let i = springs.length - 1; i >= 0; i -= 1) {
-      const sp = springs[i];
-      const elapsed = now - sp.startT;
-      if (elapsed > 2400) {
-        springs.splice(i, 1);
-        continue;
-      }
-      const envelope = Math.exp(-sp.decay * elapsed);
-      const wave = Math.sin(Math.PI * u) * Math.cos(sp.freq * elapsed);
-      // secondary harmonic
-      const wave2 = 0.35 * Math.sin(2 * Math.PI * u) * Math.sin(sp.freq * 1.5 * elapsed);
-      sag += sp.amp * envelope * (wave + wave2);
-    }
-
-    return sag;
-  }
-
-  function getWireY(x, w, baseWireY, birds, animTime, now) {
-    return baseWireY + getWireDeflection(x, w, birds, animTime, now);
-  }
-
-  function drawWire(ctx, theme, w, baseWireY, birds, animTime, now) {
+  function drawWire(ctx, theme, w, wireY) {
     ctx.strokeStyle = theme.wire;
     ctx.lineWidth = 2.4;
-    ctx.lineCap = "round";
+    ctx.lineCap = "butt";
     ctx.beginPath();
-
-    const segments = Math.max(30, Math.floor(w / 20));
-    for (let i = 0; i <= segments; i += 1) {
-      const x = (i / segments) * w;
-      const y = getWireY(x, w, baseWireY, birds, animTime, now);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
+    ctx.moveTo(0, wireY);
+    ctx.lineTo(w, wireY);
     ctx.stroke();
   }
 
@@ -1538,11 +1481,11 @@
     drawStars(scene.stars, tod, animTime, moon);
     drawCelestial(theme, tod);
     drawClouds(scene.clouds, tod);
-    drawWire(ctx, theme, width, scene.baseWireY, scene.birds, animTime, now);
+    drawWire(ctx, theme, width, scene.wireY);
 
     for (const bird of scene.birds) {
       const birdX = bird.t * width;
-      const wireY = getWireY(birdX, width, scene.baseWireY, scene.birds, animTime, now);
+      const wireY = scene.wireY;
       updateBirdBehaviors(bird, now, animTime, wireY, tod);
 
       ctx.save();
@@ -1591,12 +1534,11 @@
     const rect = canvas.getBoundingClientRect();
     const px = clientX - rect.left;
     const py = clientY - rect.top;
-    const now = performance.now();
 
     // Hit test against birds
     for (const bird of scene.birds) {
       const bx = bird.t * width;
-      const by = getWireY(bx, width, scene.baseWireY, scene.birds, now - start, now);
+      const by = scene.wireY;
       const s = bird.scale;
       const hitW = 34 * s;
       const hitTop = by - 52 * s;
@@ -1607,7 +1549,6 @@
         bird.hopVelocity = -4.5;
         bird.pose = bird.pose === "sleeping" ? "upright" : "singing";
         bird.lastChirpTime = 0; // trigger immediate chirp ripple
-        triggerSpring(bird.t, 10);
         return;
       }
     }
