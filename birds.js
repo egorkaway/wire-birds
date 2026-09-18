@@ -2,6 +2,7 @@
   const canvas = document.getElementById("scene");
   const ctx = canvas.getContext("2d");
   const caption = document.querySelector(".caption");
+  const credit = document.querySelector(".credit");
 
   const CURATED = [
     { body: "#f45b69", belly: "#ffd4c2", head: "#e23d4d", wing: "#c81d4e", tail: "#2ec4b6", crest: "#ffd166", beak: "#ff9f1c", feet: "#e76f51", eye: "#1d1a17" },
@@ -1152,8 +1153,11 @@
 
   function applyTheme(theme) {
     document.body.style.background = theme.sky;
+    const blend = theme.night ? "normal" : "multiply";
     caption.style.color = theme.ink;
-    caption.style.mixBlendMode = theme.night ? "normal" : "multiply";
+    caption.style.mixBlendMode = blend;
+    credit.style.color = theme.ink;
+    credit.style.mixBlendMode = blend;
   }
 
   function shuffle() {

@@ -47,6 +47,31 @@
         opacity: 0.55;
         letter-spacing: 0.04em;
       }
+      .credit {
+        position: fixed;
+        right: 24px;
+        bottom: 22px;
+        z-index: 2;
+        margin: 0;
+        max-width: 42vw;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-align: right;
+        color: #2c2a28;
+        mix-blend-mode: multiply;
+      }
+      .credit a {
+        color: inherit;
+        text-underline-offset: 3px;
+      }
+      @media (max-width: 560px) {
+        .credit {
+          right: 24px;
+          bottom: auto;
+          top: 22px;
+          max-width: calc(100vw - 48px);
+        }
+      }
     </style>
   </head>
   <body>
@@ -55,6 +80,9 @@
       <h1>birds on a wire</h1>
       <p>click or press space to shuffle</p>
     </div>
+    <p class="credit">
+      a design exploration for <a href="https://sovnik.com">sovnik.com</a>
+    </p>
     <script src="birds.js"></script>
   </body>
 </html>
