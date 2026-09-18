@@ -274,18 +274,19 @@
 
   function crowPalette() {
     return {
-      body: "#1c1c22",
-      belly: "#2a2a32",
-      head: "#141418",
-      wing: "#2c2c38",
-      wingBar: "#3a3a48",
-      tail: "#111114",
-      crest: "#1c1c22",
-      beak: "#0e0e10",
-      feet: "#2a241c",
+      body: "#15151c",
+      belly: "#1d1d26",
+      head: "#111116",
+      wing: "#1a1a24",
+      wingCovert: "#252433",
+      tail: "#0f0f14",
+      crest: "#15151c",
+      beak: "#0a0a0d",
+      feet: "#1a1714",
       eye: "#f0e6c8",
-      cheek: "#1c1c22",
-      throat: "#141418",
+      iris: "#2e2b38",
+      cheek: "#181820",
+      throat: "#141419",
     };
   }
 
@@ -294,54 +295,94 @@
       return {
         body: "#f4f1ea",
         belly: "#ffffff",
-        head: "#3d2914",
-        wing: "#c5ced6",
-        wingBar: "#ffffff",
+        head: "#382312",
+        wing: "#bcc5ce",
+        wingTip: "#181920",
         tail: "#dfe4ea",
-        crest: "#3d2914",
-        beak: "#d62828",
-        feet: "#d62828",
-        eye: "#1d1a17",
-        cheek: "#ffffff",
-        throat: "#3d2914",
+        crest: "#382312",
+        beak: "#b7094c",
+        feet: "#a01a42",
+        eye: "#ffffff",
+        iris: "#1d1a17",
+        eyeRing: "#ffffff",
+        hood: true,
         beakSpot: false,
-        wingTip: false,
       };
     }
     if (kind === "blackback") {
       return {
-        body: "#2b2d42",
-        belly: "#f4f1ea",
-        head: "#f7f4ee",
-        wing: "#16161d",
-        wingBar: "#ffffff",
-        tail: "#1a1a22",
-        crest: "#2b2d42",
-        beak: "#f4a261",
+        body: "#ffffff",
+        belly: "#ffffff",
+        head: "#ffffff",
+        wing: "#1e212b",
+        wingTip: "#0d0e12",
+        tail: "#ffffff",
+        crest: "#1e212b",
+        beak: "#ffb703",
         feet: "#e9c46a",
-        eye: "#1d1a17",
-        cheek: "#f4f1ea",
-        throat: "#f4f1ea",
+        eye: "#fbf8cc",
+        iris: "#1d1a17",
+        eyeRing: "#d90429",
+        hood: false,
         beakSpot: true,
-        wingTip: false,
       };
     }
+    // Herring gull
     return {
-      body: "#f4f1ea",
+      body: "#f8f9fa",
       belly: "#ffffff",
-      head: "#f7f4ee",
+      head: "#ffffff",
       wing: "#9aa7b5",
-      wingBar: "#ffffff",
-      tail: "#c5ced6",
+      wingTip: "#1b1c22",
+      tail: "#f8f9fa",
       crest: "#9aa7b5",
-      beak: "#f4a261",
-      feet: "#e9c46a",
-      eye: "#1d1a17",
-      cheek: "#ffffff",
-      throat: "#ffffff",
+      beak: "#ffb703",
+      feet: "#f4a261",
+      eye: "#fefae0",
+      iris: "#1d1a17",
+      eyeRing: "#e63946",
+      hood: false,
       beakSpot: true,
-      wingTip: true,
     };
+  }
+
+  function puffinPalette() {
+    return {
+      body: "#15151c",
+      belly: "#ffffff",
+      head: "#111116",
+      face: "#f4f3ee",
+      wing: "#1a1a24",
+      tail: "#111116",
+      beakBase: "#457b9d",
+      beakMid: "#ffb703",
+      beakTip: "#e63946",
+      feet: "#fb5607",
+      eye: "#15151c",
+      eyeAccent: "#e63946",
+    };
+  }
+
+  function toucanPalette(rng) {
+    return pick(rng, [
+      { body: "#111216", belly: "#111216", head: "#111216", wing: "#181920", tail: "#0e0f12", bib: "#ffb703", vent: "#d90429", billBase: "#0077b6", billMid: "#70e000", billTip: "#d90429", billRidge: "#ffb703", eyeSkin: "#48cae4", eye: "#0a0a0e", feet: "#0077b6" },
+      { body: "#15151c", belly: "#15151c", head: "#15151c", wing: "#1d1e26", tail: "#101014", bib: "#ffffff", vent: "#e63946", billBase: "#111111", billMid: "#f77f00", billTip: "#d62828", billRidge: "#fcbf49", eyeSkin: "#52b788", eye: "#0f0f14", feet: "#457b9d" },
+    ]);
+  }
+
+  function cockatooPalette(rng) {
+    return pick(rng, [
+      { body: "#f8f9fa", belly: "#f8f9fa", head: "#ffffff", wing: "#f1f3f5", tail: "#ffffff", crest: "#ffd166", beak: "#343a40", feet: "#6c757d", eye: "#1a1a1a", cheek: "#ffe5b4" },
+      { body: "#adb5bd", belly: "#f4978e", head: "#f8ad9d", wing: "#868e96", tail: "#6c757d", crest: "#f4978e", beak: "#e9ecef", feet: "#495057", eye: "#1a1020", cheek: "#f8ad9d" },
+      { body: "#06d6a0", belly: "#a7c957", head: "#38b000", wing: "#007200", tail: "#007200", crest: "#ffd166", beak: "#f4a261", feet: "#bc6c25", eye: "#12081f", cheek: "#ffb703" },
+    ]);
+  }
+
+  function robinPalette(rng) {
+    return pick(rng, [
+      { body: "#6c584c", breast: "#e76f51", belly: "#f0ebd8", head: "#584234", wing: "#432818", tail: "#382312", beak: "#2b1e17", feet: "#6b4d3c", eye: "#1b1008", eyeRing: "#ffffff" },
+      { body: "#457b9d", breast: "#e07a5f", belly: "#f4f1de", head: "#1d3557", wing: "#1d3557", tail: "#1d3557", beak: "#1b1b1e", feet: "#4a4e69", eye: "#0a0a10", eyeRing: "#ffffff" },
+    ]);
   }
 
   function kingfisherPalette(rng) {
@@ -441,7 +482,7 @@
       [order[i], order[j]] = [order[j], order[i]];
     }
 
-    // Always 1 owl
+    // Always 1 owl (the watcher)
     const owl = birds[order[0]];
     owl.species = "owl";
     owl.view = "front";
@@ -457,17 +498,30 @@
 
     if (birds.length < 2) return;
 
-    // Second special bird
-    const specialPool = ["crow", "seagull", "kingfisher", "swallow", "pigeon", "borb"];
-    const chosen = pick(rng, specialPool);
-    const b2 = birds[order[1]];
-    configureSpecies(rng, b2, chosen);
+    // Expanded special species list
+    const specialPool = [
+      "crow",
+      "seagull",
+      "puffin",
+      "toucan",
+      "cockatoo",
+      "robin",
+      "kingfisher",
+      "swallow",
+      "pigeon",
+      "borb",
+    ];
 
-    // If 4+ birds, add a chance for a 3rd distinct species
-    if (birds.length >= 4 && chance(rng, 0.75)) {
-      const b3 = birds[order[2]];
-      const remaining = specialPool.filter((s) => s !== chosen);
-      configureSpecies(rng, b3, pick(rng, remaining));
+    // Pick for second bird
+    const chosen1 = pick(rng, specialPool);
+    configureSpecies(rng, birds[order[1]], chosen1);
+
+    // Pick for remaining birds with high variety
+    for (let idx = 2; idx < birds.length; idx += 1) {
+      if (chance(rng, 0.65)) {
+        const remaining = specialPool.filter((s) => s !== chosen1);
+        configureSpecies(rng, birds[order[idx]], pick(rng, remaining));
+      }
     }
   }
 
@@ -487,48 +541,79 @@
       bird.colors = crowPalette();
       bird.weight = 1.5;
       bird.beakHook = true;
-      bird.beakLen = range(rng, 14, 19);
-      bird.beakH = range(rng, 2.4, 3.2);
+      bird.beakLen = range(rng, 16, 22);
+      bird.beakH = range(rng, 3.2, 4.2);
       bird.tail = "fan";
       bird.tailLen = range(rng, 22, 30);
       bird.belly = false;
       bird.pose = chance(rng, 0.55) ? "hunched" : "upright";
-      bird.bodyW = range(rng, 20, 26);
-      bird.bodyH = range(rng, 11, 15);
-      bird.scale *= 1.15;
+      bird.bodyW = range(rng, 22, 28);
+      bird.bodyH = range(rng, 13, 17);
+      bird.headR = range(rng, 10, 13);
+      bird.scale *= 1.18;
     } else if (species === "seagull") {
       bird.weight = 1.4;
-      bird.gullKind = pick(rng, ["herring", "hooded", "blackback"]);
-      const look = seagullLook(bird.gullKind);
-      bird.colors = look;
-      bird.beakSpot = look.beakSpot;
-      bird.wingTip = look.wingTip;
-      bird.beakHook = false;
-      bird.belly = true;
-      bird.eyeRing = true;
+      bird.gullKind = pick(rng, ["herring", "blackback", "hooded"]);
+      bird.colors = seagullLook(bird.gullKind);
       bird.pose = "upright";
-      if (bird.gullKind === "hooded") {
-        bird.beakLen = range(rng, 9, 12);
-        bird.beakH = range(rng, 1.8, 2.4);
-        bird.tail = "fork";
-        bird.tailLen = range(rng, 16, 22);
-        bird.bodyW = range(rng, 16, 20);
-        bird.bodyH = range(rng, 11, 14);
-        bird.headR = range(rng, 7.5, 9.5);
-        bird.scale *= 0.92;
-      } else if (bird.gullKind === "blackback") {
-        bird.beakLen = range(rng, 13, 17);
-        bird.beakH = range(rng, 2.6, 3.4);
-        bird.tail = "stub";
-        bird.bodyW = range(rng, 22, 28);
-        bird.bodyH = range(rng, 14, 18);
-        bird.scale *= 1.22;
-      } else {
-        bird.beakLen = range(rng, 11, 15);
-        bird.beakH = range(rng, 2.2, 3);
-        bird.tail = "stub";
-        bird.bodyW = range(rng, 20, 26);
-      }
+      bird.tail = "stub";
+      bird.tailLen = range(rng, 16, 22);
+      bird.bodyW = range(rng, 22, 28);
+      bird.bodyH = range(rng, 13, 17);
+      bird.headR = range(rng, 9, 12);
+      bird.beakLen = range(rng, 14, 18);
+      bird.beakH = range(rng, 2.8, 3.6);
+      bird.scale *= 1.15;
+    } else if (species === "puffin") {
+      bird.weight = 1.2;
+      bird.colors = puffinPalette();
+      bird.bodyW = range(rng, 18, 22);
+      bird.bodyH = range(rng, 17, 21);
+      bird.headR = range(rng, 11, 13.5);
+      bird.beakLen = range(rng, 13, 17);
+      bird.beakH = range(rng, 7.5, 9.5);
+      bird.tail = "stub";
+      bird.tailLen = range(rng, 10, 14);
+      bird.pose = "upright";
+      bird.scale *= 1.05;
+    } else if (species === "toucan") {
+      bird.weight = 1.35;
+      bird.colors = toucanPalette(rng);
+      bird.bodyW = range(rng, 20, 25);
+      bird.bodyH = range(rng, 15, 19);
+      bird.headR = range(rng, 11, 13.5);
+      bird.beakLen = range(rng, 28, 38);
+      bird.beakH = range(rng, 7.5, 10.5);
+      bird.tail = "long";
+      bird.tailLen = range(rng, 20, 28);
+      bird.pose = "upright";
+      bird.scale *= 1.15;
+    } else if (species === "cockatoo") {
+      bird.weight = 1.25;
+      bird.colors = cockatooPalette(rng);
+      bird.bodyW = range(rng, 19, 24);
+      bird.bodyH = range(rng, 15, 19);
+      bird.headR = range(rng, 11, 13.5);
+      bird.beakLen = range(rng, 9, 13);
+      bird.beakH = range(rng, 5.5, 7.5);
+      bird.tail = "fan";
+      bird.tailLen = range(rng, 18, 26);
+      bird.crest = "fan";
+      bird.pose = "upright";
+      bird.scale *= 1.12;
+    } else if (species === "robin") {
+      bird.weight = 0.85;
+      bird.colors = robinPalette(rng);
+      bird.bodyW = range(rng, 18, 22);
+      bird.bodyH = range(rng, 15, 19);
+      bird.headR = range(rng, 9.5, 12);
+      bird.beakLen = range(rng, 7, 10);
+      bird.beakH = range(rng, 2.2, 2.8);
+      bird.tail = "stub";
+      bird.tailLen = range(rng, 14, 18);
+      bird.tailAngle = -0.35;
+      bird.pose = "upright";
+      bird.scale *= 1.02;
     } else if (species === "kingfisher") {
       bird.weight = 1.15;
       bird.colors = kingfisherPalette(rng);
@@ -595,8 +680,14 @@
     if (bird.species === "owl" || bird.view === "front") {
       return s * Math.max(bird.headR * 2.6, bird.bodyW * 1.7) + 20;
     }
+    if (bird.species === "toucan") {
+      return s * (bird.bodyW * 1.8 + bird.beakLen * 0.95) + 26;
+    }
     if (bird.species === "crow") {
-      return s * (bird.bodyW * 2.2 + bird.tailLen * 0.7 + bird.beakLen * 0.7) + 22;
+      return s * (bird.bodyW * 2.1 + bird.tailLen * 0.6 + bird.beakLen * 0.7) + 24;
+    }
+    if (bird.species === "seagull") {
+      return s * (bird.bodyW * 2.0 + bird.tailLen * 0.5 + bird.beakLen * 0.6) + 22;
     }
     if (bird.species === "kingfisher") {
       return s * (bird.bodyW * 1.9 + bird.beakLen * 0.8) + 22;
@@ -898,7 +989,20 @@
   function drawCrest(ctx, bird, hx, hy) {
     if (bird.crest === "none") return;
     paint(ctx, bird.colors.crest);
-    if (bird.crest === "dagger") {
+    if (bird.crest === "fan") {
+      // Cockatoo fan crest
+      for (let i = 0; i < 4; i += 1) {
+        const a = -2.7 + i * 0.35;
+        teardrop(
+          ctx,
+          hx + Math.cos(a) * bird.headR * 0.6,
+          hy + Math.sin(a) * bird.headR * 0.6,
+          bird.headR * (1.15 + i * 0.12),
+          2.6,
+          a,
+        );
+      }
+    } else if (bird.crest === "dagger") {
       // Kingfisher dagger crest
       teardrop(ctx, hx - bird.headR * 0.4, hy - bird.headR * 0.7, bird.headR * 1.25, 3.2, -2.4);
       teardrop(ctx, hx - bird.headR * 0.1, hy - bird.headR * 0.8, bird.headR * 1.05, 2.6, -2.1);
@@ -953,10 +1057,10 @@
       ctx.stroke();
       return;
     }
-    paint(ctx, bird.species === "crow" ? "#1a1a1a" : "#f7f4ef");
-    ellipse(ctx, ex, ey, bird.species === "crow" ? 2.2 : 2.7, bird.species === "crow" ? 2.2 : 2.7);
+    paint(ctx, "#f7f4ef");
+    ellipse(ctx, ex, ey, 2.7, 2.7);
     paint(ctx, bird.colors.eye);
-    ellipse(ctx, ex + 0.35, ey + 0.15, bird.species === "crow" ? 1.1 : 1.45, bird.species === "crow" ? 1.1 : 1.45);
+    ellipse(ctx, ex + 0.35, ey + 0.15, 1.45, 1.45);
     paint(ctx, "#ffffff");
     ellipse(ctx, ex - 0.55, ey - 0.7, 0.7, 0.7);
   }
@@ -1024,10 +1128,6 @@
       ctx.quadraticCurveTo(bird.beakLen * 0.85, bird.beakH * 0.7, bird.beakLen * 0.55, 0);
       finish(ctx);
     }
-    if (bird.beakSpot && paintPass !== "halo") {
-      paint(ctx, "#e63946");
-      ellipse(ctx, bird.beakLen * 0.72, bird.beakH * 0.15, 1.15, 1.15);
-    }
     ctx.restore();
   }
 
@@ -1035,13 +1135,11 @@
     const w = bird.bodyW;
     const h = bird.bodyH;
 
-    // Base wing covert
     paint(ctx, bird.colors.wing);
     ellipse(ctx, bodyX + 1, bodyY + 1, w * 0.58, h * 0.36, 0.35);
 
     if (paintPass === "halo") return;
 
-    // Wing bars (graphic stripes / coverts)
     if (bird.wingBars > 0 && bird.colors.wingBar) {
       paint(ctx, bird.colors.wingBar);
       ellipse(ctx, bodyX - w * 0.08, bodyY - 1, w * 0.22, 1.4, 0.38);
@@ -1049,42 +1147,513 @@
         ellipse(ctx, bodyX - w * 0.02, bodyY + 2.5, w * 0.26, 1.3, 0.38);
       }
     }
-
-    // Wing tip accent
-    if (bird.wingTip) {
-      paint(ctx, "#2b2d42");
-      ellipse(ctx, bodyX + w * 0.42, bodyY + 2, 3.2, 2.1, 0.2);
-    }
   }
 
   function drawCheekAndMarkings(ctx, bird, hx, hy, bodyX, bodyY) {
     if (paintPass === "halo") return;
 
-    // Neck ring (Kingfisher style)
     if (bird.neckRing) {
       paint(ctx, "#ffffff");
       ellipse(ctx, hx - bird.headR * 0.1, hy + bird.headR * 0.75, bird.headR * 0.82, 2.4, 0.15);
     }
-
-    // Iridescent Neck Sheen (Pigeon style)
     if (bird.neckSheen) {
       paint(ctx, bird.colors.throat);
       ellipse(ctx, hx - bird.headR * 0.15, hy + bird.headR * 0.7, bird.headR * 0.7, 2.8, 0.25);
     }
-
-    // Throat Bib (Swallow rust bib)
     if (bird.throatBib) {
       paint(ctx, bird.colors.throat);
       ellipse(ctx, hx + bird.headR * 0.25, hy + bird.headR * 0.65, bird.headR * 0.5, bird.headR * 0.5, 0.2);
     }
-
-    // Cheek Patch (Borb / Chickadee white cheek)
     if (bird.cheekPatch) {
       paint(ctx, bird.colors.cheek);
       ellipse(ctx, hx + bird.headR * 0.15, hy + bird.headR * 0.2, bird.headR * 0.48, bird.headR * 0.36, 0.1);
     }
   }
 
+  // --- Specialized Species Renderers ---
+
+  // 1. Upgraded Realistic Corvid / Crow
+  function drawCrow(ctx, bird, now, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
+    const hunched = bird.pose === "hunched" || bird.pose === "sleeping";
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    // Diamond wedge tail
+    paint(ctx, bird.colors.tail);
+    teardrop(ctx, bodyX - w * 0.75, bodyY + h * 0.1, bird.tailLen * 0.95, 4.2, Math.PI + 0.25);
+    teardrop(ctx, bodyX - w * 0.75, bodyY + h * 0.1, bird.tailLen * 0.78, 3.2, Math.PI + 0.05);
+
+    drawFoot(ctx, -5.2, bird.colors, "side");
+
+    // Deep obsidian body
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, bodyX, bodyY, w * 0.92, h * 0.95, hunched ? -0.05 : -0.15);
+
+    // Layered primary flight feathers extending past the back
+    paint(ctx, bird.colors.wingCovert);
+    ellipse(ctx, bodyX - w * 0.15, bodyY - h * 0.15, w * 0.48, h * 0.38, 0.32);
+
+    paint(ctx, bird.colors.wing);
+    teardrop(ctx, bodyX - w * 0.1, bodyY - h * 0.1, w * 1.15, 4.8, 0.45);
+    teardrop(ctx, bodyX - w * 0.18, bodyY - h * 0.02, w * 1.05, 3.8, 0.38);
+
+    drawFoot(ctx, 4.8, bird.colors, "side");
+
+    const hx = bodyX + w * 0.48;
+    const hy = bodyY - h * (hunched ? 0.32 : 0.58) + (bird.pose === "lookingUp" ? -4 : 0);
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate((bird.saccadeAngle || 0) * 0.6);
+
+    // Shaggy throat hackles
+    paint(ctx, bird.colors.throat);
+    teardrop(ctx, bird.headR * 0.2, bird.headR * 0.65, bird.headR * 0.95, 3.2, 1.45);
+    teardrop(ctx, bird.headR * 0.05, bird.headR * 0.8, bird.headR * 0.75, 2.8, 1.85);
+
+    // Corvid Head
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 0.95, bird.headR * 0.9);
+
+    // Arched Corvid Beak
+    const beakLen = bird.beakLen;
+    const beakH = bird.beakH;
+    paint(ctx, bird.colors.beak);
+    ctx.beginPath();
+    ctx.moveTo(bird.headR * 0.65, -beakH * 0.7);
+    ctx.quadraticCurveTo(bird.headR * 0.65 + beakLen * 0.65, -beakH * 0.9, bird.headR * 0.65 + beakLen, beakH * 0.5);
+    ctx.quadraticCurveTo(bird.headR * 0.65 + beakLen * 0.4, beakH * 1.1, bird.headR * 0.65, beakH * 0.9);
+    ctx.closePath();
+    finish(ctx);
+
+    // Nasal bristles at beak base
+    if (paintPass !== "halo") {
+      paint(ctx, "#1c1c24");
+      teardrop(ctx, bird.headR * 0.68, -beakH * 0.55, 4.5, 1.6, 0.3);
+    }
+
+    // Corvid Eye
+    const ex = bird.headR * 0.24;
+    const ey = -bird.headR * 0.08;
+    if (paintPass !== "halo") {
+      if (bird.pose === "sleeping" || blinkOn) {
+        ctx.strokeStyle = "#4a4855";
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.arc(ex, ey, 2.2, 0.15, Math.PI - 0.15);
+        ctx.stroke();
+      } else {
+        paint(ctx, bird.colors.eye);
+        ellipse(ctx, ex, ey, 2.6, 2.6);
+        paint(ctx, "#101014");
+        ellipse(ctx, ex + 0.3, ey, 1.45, 1.45);
+        paint(ctx, "#ffffff");
+        ellipse(ctx, ex - 0.6, ey - 0.7, 0.7, 0.7);
+      }
+    }
+
+    ctx.restore();
+    ctx.restore();
+  }
+
+  // 2. Upgraded Seagull with White Mirror Spots
+  function drawSeagull(ctx, bird, now, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    // Tail
+    paint(ctx, bird.colors.tail);
+    teardrop(ctx, bodyX - w * 0.72, bodyY - h * 0.05, bird.tailLen * 0.85, 3.8, Math.PI + 0.18);
+
+    drawFoot(ctx, -5.5, bird.colors, "side");
+
+    // Body
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, bodyX, bodyY, w * 0.88, h * 0.92, -0.12);
+
+    // Wing Mantle
+    paint(ctx, bird.colors.wing);
+    ellipse(ctx, bodyX - w * 0.05, bodyY - h * 0.05, w * 0.55, h * 0.42, 0.32);
+
+    // Black primary wing tip with white mirror spots
+    paint(ctx, bird.colors.wingTip);
+    teardrop(ctx, bodyX - w * 0.05, bodyY + 1, w * 0.95, 4.2, 0.42);
+
+    if (paintPass !== "halo" && !bird.colors.hood) {
+      // White "mirrors" on primary flight feathers
+      paint(ctx, "#ffffff");
+      ellipse(ctx, bodyX + w * 0.65, bodyY + h * 0.45, 1.6, 1.2, 0.3);
+      ellipse(ctx, bodyX + w * 0.52, bodyY + h * 0.35, 1.3, 1.0, 0.3);
+    }
+
+    drawFoot(ctx, 4.5, bird.colors, "side");
+
+    const hx = bodyX + w * 0.52;
+    const hy = bodyY - h * 0.5 + (bird.pose === "lookingUp" ? -4 : 0);
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    // Sloped Gull Head / Hood
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.02, bird.headR * 0.88, -0.08);
+
+    // Hooked Beak with Gonys Angle
+    const blen = bird.beakLen;
+    const bh = bird.beakH;
+    paint(ctx, bird.colors.beak);
+    ctx.beginPath();
+    ctx.moveTo(bird.headR * 0.7, -bh * 0.6);
+    ctx.lineTo(bird.headR * 0.7 + blen * 0.85, -bh * 0.4);
+    ctx.quadraticCurveTo(bird.headR * 0.7 + blen * 1.08, bh * 0.6, bird.headR * 0.7 + blen * 0.75, bh * 0.9);
+    ctx.lineTo(bird.headR * 0.7, bh * 0.7);
+    ctx.closePath();
+    finish(ctx);
+
+    // Red Gonys Spot
+    if (bird.colors.beakSpot && paintPass !== "halo") {
+      paint(ctx, "#d90429");
+      ellipse(ctx, bird.headR * 0.7 + blen * 0.7, bh * 0.35, 1.3, 1.1);
+    }
+
+    // Eye with Orbital Ring
+    const ex = bird.headR * 0.28;
+    const ey = -bird.headR * 0.1;
+    if (paintPass !== "halo") {
+      if (bird.pose === "sleeping" || blinkOn) {
+        ctx.strokeStyle = bird.colors.hood ? "#ffffff" : bird.colors.eyeRing;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 2.2, 0.15, Math.PI - 0.15);
+        ctx.stroke();
+      } else {
+        // Orbital ring
+        paint(ctx, bird.colors.eyeRing);
+        ellipse(ctx, ex, ey, 3.1, 3.1);
+
+        // Iris & pupil
+        paint(ctx, bird.colors.eye);
+        ellipse(ctx, ex, ey, 2.4, 2.4);
+        paint(ctx, bird.colors.iris);
+        ellipse(ctx, ex + 0.3, ey, 1.3, 1.3);
+        paint(ctx, "#ffffff");
+        ellipse(ctx, ex - 0.5, ey - 0.6, 0.6, 0.6);
+
+        // Hooded gull white eye-crescents
+        if (bird.colors.hood) {
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 1.0;
+          ctx.beginPath();
+          ctx.arc(ex, ey, 3.6, -Math.PI * 0.8, -Math.PI * 0.2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(ex, ey, 3.6, Math.PI * 0.2, Math.PI * 0.8);
+          ctx.stroke();
+        }
+      }
+    }
+
+    ctx.restore();
+    ctx.restore();
+  }
+
+  // 3. The Puffin
+  function drawPuffin(ctx, bird, now, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    // Tail
+    paint(ctx, bird.colors.tail);
+    teardrop(ctx, bodyX - w * 0.7, bodyY + h * 0.15, bird.tailLen * 0.6, 3.6, Math.PI + 0.1);
+
+    drawFoot(ctx, -5.5, bird.colors, "side");
+
+    // Tuxedo Black Back
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, bodyX, bodyY, w * 0.82, h * 1.02, -0.05);
+
+    // Stark White Belly
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.belly);
+      ellipse(ctx, bodyX + 3, bodyY + h * 0.15, w * 0.52, h * 0.75, 0.05);
+    }
+
+    // Wing
+    paint(ctx, bird.colors.wing);
+    ellipse(ctx, bodyX - 1, bodyY + 1, w * 0.46, h * 0.48, 0.25);
+
+    drawFoot(ctx, 4.5, bird.colors, "side");
+
+    const hx = bodyX + w * 0.42;
+    const hy = bodyY - h * 0.55 + (bird.pose === "lookingUp" ? -4 : 0);
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    // Black Head
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.05, bird.headR * 0.95);
+
+    // White Heart Face Mask
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.face);
+      ellipse(ctx, bird.headR * 0.18, 0, bird.headR * 0.65, bird.headR * 0.68, 0.1);
+    }
+
+    // Rainbow Banded Triangular Bill
+    const blen = bird.beakLen;
+    const bh = bird.beakH;
+    const bx = bird.headR * 0.62;
+
+    // Base band (Slate Blue)
+    paint(ctx, bird.colors.beakBase);
+    poly(ctx, [[bx, -bh * 0.5], [bx + blen * 0.4, -bh * 0.4], [bx + blen * 0.35, bh * 0.45], [bx, bh * 0.5]]);
+
+    // Mid band (Golden Yellow)
+    paint(ctx, bird.colors.beakMid);
+    poly(ctx, [[bx + blen * 0.38, -bh * 0.41], [bx + blen * 0.65, -bh * 0.3], [bx + blen * 0.6, bh * 0.35], [bx + blen * 0.33, bh * 0.46]]);
+
+    // Tip (Flame Red-Orange)
+    paint(ctx, bird.colors.beakTip);
+    poly(ctx, [[bx + blen * 0.63, -bh * 0.31], [bx + blen, 0], [bx + blen * 0.58, bh * 0.36]]);
+
+    // Puffin Eye with triangular markings
+    const ex = bird.headR * 0.25;
+    const ey = -bird.headR * 0.08;
+    if (paintPass !== "halo") {
+      if (bird.pose === "sleeping" || blinkOn) {
+        ctx.strokeStyle = "#111116";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 2.2, 0.15, Math.PI - 0.15);
+        ctx.stroke();
+      } else {
+        // Red accent eye ring
+        paint(ctx, bird.colors.eyeAccent);
+        ellipse(ctx, ex, ey, 2.9, 2.9);
+
+        paint(ctx, bird.colors.eye);
+        ellipse(ctx, ex, ey, 2.2, 2.2);
+        paint(ctx, "#ffffff");
+        ellipse(ctx, ex - 0.5, ey - 0.6, 0.6, 0.6);
+
+        // Triangular upper/lower eye dashes
+        paint(ctx, "#111116");
+        poly(ctx, [[ex - 1.0, ey - 3.2], [ex + 1.0, ey - 3.2], [ex, ey - 5.5]]);
+        poly(ctx, [[ex - 0.8, ey + 3.2], [ex + 0.8, ey + 3.2], [ex, ey + 4.8]]);
+      }
+    }
+
+    ctx.restore();
+    ctx.restore();
+  }
+
+  // 4. The Toucan
+  function drawToucan(ctx, bird, now, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    // Tail & Red vent
+    paint(ctx, bird.colors.tail);
+    teardrop(ctx, bodyX - w * 0.72, bodyY + h * 0.1, bird.tailLen * 0.9, 4.4, Math.PI + 0.28);
+    paint(ctx, bird.colors.vent);
+    ellipse(ctx, bodyX - w * 0.55, bodyY + h * 0.3, 3.8, 3.2);
+
+    drawFoot(ctx, -5.2, bird.colors, "side");
+
+    // Obsidian Body
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, bodyX, bodyY, w * 0.88, h * 0.95, -0.15);
+
+    // Wing
+    paint(ctx, bird.colors.wing);
+    ellipse(ctx, bodyX - w * 0.05, bodyY, w * 0.52, h * 0.38, 0.35);
+
+    drawFoot(ctx, 4.8, bird.colors, "side");
+
+    const hx = bodyX + w * 0.48;
+    const hy = bodyY - h * 0.52 + (bird.pose === "lookingUp" ? -4 : 0);
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    // Black Head
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.05, bird.headR * 0.95);
+
+    // Bright Chest Bib
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.bib);
+      ellipse(ctx, bird.headR * 0.4, bird.headR * 0.6, bird.headR * 0.62, bird.headR * 0.75, 0.35);
+    }
+
+    // Giant Banana Toucan Bill
+    const blen = bird.beakLen;
+    const bh = bird.beakH;
+    const bx = bird.headR * 0.65;
+
+    // Main bill body
+    paint(ctx, bird.colors.billMid);
+    ctx.beginPath();
+    ctx.moveTo(bx, -bh * 0.5);
+    ctx.quadraticCurveTo(bx + blen * 0.5, -bh * 0.9, bx + blen, bh * 0.4);
+    ctx.quadraticCurveTo(bx + blen * 0.6, bh * 0.95, bx, bh * 0.65);
+    ctx.closePath();
+    finish(ctx);
+
+    if (paintPass !== "halo") {
+      // Crimson Tip
+      paint(ctx, bird.colors.billTip);
+      ctx.beginPath();
+      ctx.moveTo(bx + blen * 0.65, -bh * 0.6);
+      ctx.quadraticCurveTo(bx + blen * 0.85, -bh * 0.3, bx + blen, bh * 0.4);
+      ctx.quadraticCurveTo(bx + blen * 0.75, bh * 0.75, bx + blen * 0.58, bh * 0.5);
+      ctx.closePath();
+      finish(ctx);
+
+      // Black/Turquoise Base Band
+      paint(ctx, bird.colors.billBase);
+      poly(ctx, [[bx, -bh * 0.52], [bx + 4.5, -bh * 0.55], [bx + 3.8, bh * 0.68], [bx, bh * 0.65]]);
+    }
+
+    // Blue Orbital Eye Skin
+    const ex = bird.headR * 0.22;
+    const ey = -bird.headR * 0.05;
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.eyeSkin);
+      ellipse(ctx, ex, ey, 4.2, 4.2);
+
+      if (bird.pose === "sleeping" || blinkOn) {
+        ctx.strokeStyle = "#101014";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 2.2, 0.15, Math.PI - 0.15);
+        ctx.stroke();
+      } else {
+        paint(ctx, bird.colors.eye);
+        ellipse(ctx, ex, ey, 2.2, 2.2);
+        paint(ctx, "#ffffff");
+        ellipse(ctx, ex - 0.5, ey - 0.6, 0.6, 0.6);
+      }
+    }
+
+    ctx.restore();
+    ctx.restore();
+  }
+
+  // 5. The Cockatoo / Parrot
+  function drawCockatoo(ctx, bird, now, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    // Tail
+    paint(ctx, bird.colors.tail);
+    teardrop(ctx, bodyX - w * 0.7, bodyY + h * 0.05, bird.tailLen * 0.85, 4.0, Math.PI + 0.25);
+
+    drawFoot(ctx, -5.2, bird.colors, "side");
+
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, bodyX, bodyY, w * 0.88, h * 0.95, -0.15);
+
+    paint(ctx, bird.colors.wing);
+    ellipse(ctx, bodyX - w * 0.05, bodyY, w * 0.52, h * 0.38, 0.35);
+
+    drawFoot(ctx, 4.8, bird.colors, "side");
+
+    const hx = bodyX + w * 0.48;
+    const hy = bodyY - h * 0.52 + (bird.pose === "lookingUp" ? -4 : 0);
+
+    drawCrest(ctx, bird, hx, hy);
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.05, bird.headR * 0.95);
+
+    // Cheek blush
+    if (bird.colors.cheek && paintPass !== "halo") {
+      paint(ctx, bird.colors.cheek);
+      ellipse(ctx, bird.headR * 0.12, bird.headR * 0.3, bird.headR * 0.35, bird.headR * 0.28, 0.1);
+    }
+
+    // Hooked Parrot Beak
+    const blen = bird.beakLen;
+    const bh = bird.beakH;
+    paint(ctx, bird.colors.beak);
+    ctx.beginPath();
+    ctx.moveTo(bird.headR * 0.65, -bh * 0.4);
+    ctx.quadraticCurveTo(bird.headR * 0.65 + blen * 0.9, -bh * 0.2, bird.headR * 0.65 + blen * 0.6, bh * 1.25);
+    ctx.quadraticCurveTo(bird.headR * 0.65 + blen * 0.3, bh * 0.4, bird.headR * 0.65, bh * 0.7);
+    ctx.closePath();
+    finish(ctx);
+
+    const ex = bird.headR * 0.22;
+    const ey = -bird.headR * 0.08;
+    drawSideEye(ctx, ex, ey, bird, blinkOn);
+
+    ctx.restore();
+    ctx.restore();
+  }
+
+  // 6. The Robin / Bluebird
+  function drawRobin(ctx, bird, now, time) {
+    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    drawTail(ctx, bird, bodyX, bodyY, now);
+    drawFoot(ctx, -5.2, bird.colors, "side");
+
+    // Mantle
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, bodyX, bodyY, w * 0.9, h * 0.95, -0.15);
+
+    // Glowing Orange Breast Bib
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.breast);
+      ellipse(ctx, bodyX + w * 0.28, bodyY + h * 0.12, w * 0.58, h * 0.65, 0.22);
+      paint(ctx, bird.colors.belly);
+      ellipse(ctx, bodyX - w * 0.05, bodyY + h * 0.45, w * 0.42, h * 0.45);
+    }
+
+    drawLayeredWing(ctx, bird, bodyX, bodyY);
+    drawFoot(ctx, 4.8, bird.colors, "side");
+
+    const hx = bodyX + w * 0.5;
+    const hy = bodyY - h * 0.52 + (bird.pose === "lookingUp" ? -4 : 0);
+
+    ctx.save();
+    ctx.translate(hx, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.0, bird.headR * 0.92);
+
+    // Under-chin bib extension
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.breast);
+      ellipse(ctx, bird.headR * 0.35, bird.headR * 0.42, bird.headR * 0.45, bird.headR * 0.45, 0.2);
+    }
+
+    drawSideBeak(ctx, bird, 0, 0);
+    drawSideEye(ctx, bird.headR * 0.25, -bird.headR * 0.1, bird, blinkOn);
+
+    ctx.restore();
+    ctx.restore();
+  }
+
+  // 7. Generic / Borb / Swallow / Kingfisher / Pigeon
   function drawSideBird(ctx, bird, now, time) {
     const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
     drawTail(ctx, bird, bodyX, bodyY, now);
@@ -1109,7 +1678,7 @@
     drawFoot(ctx, 4.2, bird.colors, "side");
 
     const hunched = bird.pose === "hunched" || bird.pose === "sleeping";
-    const hx = bodyX + bird.bodyW * (bird.species === "crow" ? 0.42 : bird.headNudge);
+    const hx = bodyX + bird.bodyW * bird.headNudge;
     const hy = bodyY - bird.bodyH * (hunched ? 0.28 : 0.48) + (bird.pose === "lookingUp" ? -4 : 0);
 
     drawCrest(ctx, bird, hx, hy);
@@ -1118,12 +1687,7 @@
     ctx.save();
     ctx.translate(hx, hy);
     ctx.rotate(bird.saccadeAngle || 0);
-    ellipse(ctx, 0, 0, bird.headR * (bird.species === "crow" ? 0.88 : 1), bird.headR * 0.96);
-
-    if (bird.gullKind === "hooded") {
-      paint(ctx, bird.colors.head);
-      ellipse(ctx, -1.5, bird.headR * 0.55, bird.headR * 0.9, bird.headR * 0.72);
-    }
+    ellipse(ctx, 0, 0, bird.headR, bird.headR * 0.96);
 
     drawCheekAndMarkings(ctx, bird, 0, 0, bodyX - hx, bodyY - hy);
     drawSideBeak(ctx, bird, 0, 0);
@@ -1235,108 +1799,6 @@
     ctx.restore();
   }
 
-  function drawCrow(ctx, bird, now, time) {
-    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
-    const hunched = bird.pose === "hunched" || bird.pose === "sleeping";
-    const w = bird.bodyW;
-    const h = bird.bodyH;
-    const chest = [bodyX + w * 0.9, bodyY + h * 0.08];
-    const nape = [bodyX - w * 0.05, bodyY - h * 1.05];
-    const rump = [bodyX - w * 0.95, bodyY + h * 0.12];
-    const belly = [bodyX + w * 0.05, bodyY + h * 0.95];
-
-    paint(ctx, bird.colors.tail);
-    poly(ctx, [rump, [bodyX - w * 1.55, bodyY - h * 0.7], [bodyX - w * 0.35, bodyY - h * 0.2]]);
-    poly(ctx, [rump, [bodyX - w * 1.7, bodyY + h * 0.08], [bodyX - w * 0.4, bodyY + h * 0.32]]);
-    poly(ctx, [rump, [bodyX - w * 1.35, bodyY + h * 0.7], belly]);
-
-    drawFoot(ctx, -4.2, bird.colors, "side");
-
-    paint(ctx, bird.colors.body);
-    poly(ctx, [chest, nape, rump]);
-    poly(ctx, [chest, rump, belly]);
-
-    paint(ctx, bird.colors.wing);
-    poly(ctx, [
-      [bodyX - w * 0.05, bodyY - h * 0.15],
-      [bodyX + w * 0.62, bodyY + h * 0.12],
-      [bodyX - w * 0.45, bodyY + h * 0.72],
-    ]);
-    poly(ctx, [
-      [bodyX + w * 0.15, bodyY + h * 0.05],
-      [bodyX + w * 0.55, bodyY + h * 0.22],
-      [bodyX - w * 0.1, bodyY + h * 0.5],
-    ]);
-
-    drawFoot(ctx, 3.6, bird.colors, "side");
-
-    const hx = bodyX + w * 0.58;
-    const hy = bodyY - h * (hunched ? 0.38 : 0.62);
-
-    ctx.save();
-    ctx.translate(hx, hy);
-    ctx.rotate((bird.saccadeAngle || 0) * 0.6);
-
-    paint(ctx, bird.colors.head);
-    poly(ctx, [
-      [-bird.headR * 0.95, bird.headR * 0.4],
-      [-bird.headR * 0.08, -bird.headR * 1.15],
-      [bird.headR * 0.95, bird.headR * 0.12],
-    ]);
-    poly(ctx, [
-      [-bird.headR * 0.95, bird.headR * 0.4],
-      [bird.headR * 0.95, bird.headR * 0.12],
-      [bird.headR * 0.15, bird.headR * 0.85],
-    ]);
-
-    paint(ctx, bird.colors.beak);
-    poly(ctx, [
-      [bird.headR * 0.55, -0.4],
-      [bird.headR * 0.55 + bird.beakLen * 1.15, 2.2],
-      [bird.headR * 0.28, 3.6],
-    ]);
-
-    const ex = bird.headR * 0.22;
-    const ey = -bird.headR * 0.05;
-    if (paintPass !== "halo") {
-      if (bird.pose === "sleeping" || blinkOn) {
-        ctx.strokeStyle = bird.colors.eye;
-        ctx.lineWidth = 1.5;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.moveTo(ex - 2.4, ey);
-        ctx.lineTo(ex, ey + 1.6);
-        ctx.lineTo(ex + 2.4, ey);
-        ctx.stroke();
-      } else {
-        paint(ctx, bird.colors.eye);
-        poly(ctx, [
-          [ex, ey - 2.3],
-          [ex + 2.4, ey],
-          [ex, ey + 2.3],
-        ]);
-        poly(ctx, [
-          [ex, ey - 2.3],
-          [ex, ey + 2.3],
-          [ex - 2.4, ey],
-        ]);
-        paint(ctx, "#f0e6c8");
-        poly(ctx, [
-          [ex, ey - 1.1],
-          [ex + 1.15, ey],
-          [ex, ey + 1.1],
-        ]);
-        poly(ctx, [
-          [ex, ey - 1.1],
-          [ex, ey + 1.1],
-          [ex - 1.15, ey],
-        ]);
-      }
-    }
-    ctx.restore();
-    ctx.restore();
-  }
-
   function drawBirdShape(ctx, bird, now, time) {
     if (bird.species === "owl") {
       drawOwl(ctx, bird, now, time);
@@ -1344,6 +1806,26 @@
     }
     if (bird.species === "crow") {
       drawCrow(ctx, bird, now, time);
+      return;
+    }
+    if (bird.species === "seagull") {
+      drawSeagull(ctx, bird, now, time);
+      return;
+    }
+    if (bird.species === "puffin") {
+      drawPuffin(ctx, bird, now, time);
+      return;
+    }
+    if (bird.species === "toucan") {
+      drawToucan(ctx, bird, now, time);
+      return;
+    }
+    if (bird.species === "cockatoo") {
+      drawCockatoo(ctx, bird, now, time);
+      return;
+    }
+    if (bird.species === "robin") {
+      drawRobin(ctx, bird, now, time);
       return;
     }
     if (bird.view === "front") {
@@ -1598,4 +2080,5 @@
   resize();
   requestAnimationFrame(loop);
 })();
+
 
