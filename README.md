@@ -6,11 +6,19 @@ Open `index.html` locally, or drop the repo on [Netlify](https://www.netlify.com
 
 ## What’s on the wire
 
-- **Flock size** from a single owl up to several birds, with uneven gaps so they never overlap.
-- **One owl**, always, looking at you.
-- **A crow or a seagull** when there is more than one bird. The crow is assembled from triangles; seagulls come in three looks — herring, hooded, and black-backed.
-- Some of the others face the viewer.
-- **Sun and moon** travel east → west. Shuffle always moves time forward, so day turning into night goes through sunset, and night turning into day goes through sunrise. The sun stays gold, warming only as it nears the horizon.
+- **Diverse Species Archetypes**:
+  - **One Owl**, always, front-facing with large expressive eyes and ear tufts.
+  - **The Crow**, assembled from sharp origami triangles with raven posture.
+  - **Seagulls** in three looks — herring, hooded, and black-backed.
+  - **The Borb (Wren/Chickadee)**, ultra-round with a cocked-up tail and contrast cheek patch.
+  - **The Swallow (Swift)**, aerodynamic with scissor streamer tails and rust throat bib.
+  - **The Kingfisher (Woodpecker)**, stout with a sharp spear beak, dagger crest, and white collar.
+  - **The Pigeon (Dove)**, deep breast with iridescent neck sheen and wing bars.
+  - **Songbirds** with layered wing plumage, crests, and color accents.
+- **Dynamic Wire Sag & Spring Physics**: The wire sags naturally under bird weight (heavier for owls, crows, pigeons) and vibrates with a damped spring oscillation on landing or tapping.
+- **Avian Micro-Animations**: Snap-action saccadic head twitches, gentle breathing fluff, tail twitches, and floating concentric chirp ripples on singing birds.
+- **Interactive on Mobile & Desktop**: Tap individual birds to make them chirp and hop; tap the sky or press space to shuffle the flock.
+- **Sun, Moon & Twilight Shading**: East → west progression with sunrise/sunset golden hour and moonlight rim highlights on bird silhouettes.
 
 ## Run locally
 

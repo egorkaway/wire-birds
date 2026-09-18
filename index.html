@@ -18,6 +18,9 @@
         overflow: hidden;
         background: #f4efe6;
         font-family: "Avenir Next", "Segoe UI", sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
       }
       canvas {
         display: block;
@@ -65,11 +68,16 @@
         text-underline-offset: 3px;
       }
       @media (max-width: 560px) {
+        .caption {
+          left: 18px;
+          bottom: 18px;
+        }
         .credit {
-          right: 24px;
+          right: 18px;
           bottom: auto;
-          top: 22px;
-          max-width: calc(100vw - 48px);
+          top: 18px;
+          max-width: calc(100vw - 36px);
+          font-size: 11px;
         }
       }
     </style>
@@ -78,7 +86,7 @@
     <canvas id="scene" aria-label="Procedurally generated birds sitting on a wire"></canvas>
     <div class="caption">
       <h1>birds on a wire</h1>
-      <p>click or press space to shuffle</p>
+      <p>tap birds to chirp • tap sky or space to shuffle</p>
     </div>
     <p class="credit">
       a design exploration for <a href="https://sovnik.com">sovnik.com</a>
