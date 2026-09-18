@@ -451,6 +451,53 @@
     }
   }
 
+  function nightAmount(t) {
+    t = wrapUnit(t);
+    if (t >= 0.3 && t <= 0.7) return 0;
+    if (t > 0.7 && t < 0.84) return (t - 0.7) / 0.14;
+    if (t >= 0.84 || t <= 0.16) return 1;
+    return 1 - (t - 0.16) / 0.14;
+  }
+
+  function makeWeather(rng, w, h) {
+    const stars = [];
+    const starCount = 32 + Math.floor(rng() * 36);
+    for (let i = 0; i < starCount; i += 1) {
+      stars.push({
+        x: rng() * w,
+        y: h * 0.48 * rng() ** 1.35,
+        r: 0.55 + rng() * 1.55,
+        tw: rng() * Math.PI * 2,
+        bright: 0.4 + rng() * 0.6,
+      });
+    }
+
+    const clouds = [];
+    if (chance(rng, 0.55)) {
+      const n = 1 + Math.floor(rng() * 3);
+      for (let i = 0; i < n; i += 1) {
+        const s = range(rng, 0.75, 1.45);
+        const puffs = [];
+        const puffCount = 3 + Math.floor(rng() * 3);
+        for (let p = 0; p < puffCount; p += 1) {
+          puffs.push({
+            dx: range(rng, -30, 30) * s,
+            dy: range(rng, -11, 8) * s,
+            rx: range(rng, 15, 28) * s,
+            ry: range(rng, 9, 16) * s,
+          });
+        }
+        clouds.push({
+          x: range(rng, w * 0.08, w * 0.92),
+          y: range(rng, h * 0.08, h * 0.36),
+          puffs,
+        });
+      }
+    }
+
+    return { stars, clouds };
+  }
+
   function createScene(currentSeed, w, h) {
     const rng = mulberry32(currentSeed);
     const sizeMul = Math.min(1.2, Math.max(0.72, w / 920));
@@ -459,10 +506,13 @@
     const birds = Array.from({ length: count }, () => makeBird(rng, 0.5, sizeMul));
     assignSpecials(rng, birds);
     placeAlongWire(rng, birds, w);
+    const weather = makeWeather(rng, w, h);
     return {
       seed: currentSeed,
       wireY: h * 0.58,
       birds,
+      stars: weather.stars,
+      clouds: weather.clouds,
     };
   }
 
@@ -916,6 +966,51 @@
     ctx.stroke();
   }
 
+  function drawStars(stars, tod, animTime, moon) {
+    const night = nightAmount(tod);
+    if (night < 0.06 || !stars) return;
+    for (const star of stars) {
+      if (moon) {
+        const dx = star.x - moon.x;
+        const dy = star.y - moon.y;
+        if (dx * dx + dy * dy < (moon.r + 18) ** 2) continue;
+      }
+      const twinkle = 0.72 + 0.28 * Math.sin(animTime / 480 + star.tw);
+      ctx.globalAlpha = night * star.bright * twinkle;
+      ctx.fillStyle = "#f7f1e1";
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function cloudFill(tod) {
+    const sunP = dayProgress(tod);
+    if (sunP != null) {
+      const alt = Math.sin(Math.PI * sunP);
+      if (alt < 0.38) return lerpHex("#f4c9a0", "#f7f4ef", alt / 0.38);
+      return "#f7f4ef";
+    }
+    return lerpHex("#d9cbb3", "#c9b8a6", nightAmount(tod));
+  }
+
+  function drawClouds(clouds, tod) {
+    const night = nightAmount(tod);
+    if (night > 0.7 || !clouds || !clouds.length) return;
+    const alpha = night < 0.15 ? 0.9 : 0.9 * (1 - (night - 0.15) / 0.55);
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.fillStyle = cloudFill(tod);
+    for (const cloud of clouds) {
+      for (const puff of cloud.puffs) {
+        ctx.beginPath();
+        ctx.ellipse(cloud.x + puff.dx, cloud.y + puff.dy, puff.rx, puff.ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
   function drawCelestial(theme, tod) {
     const sunP = dayProgress(tod);
     const moonP = nightProgress(tod);
@@ -961,7 +1056,15 @@
     ctx.fillStyle = theme.sky;
     ctx.fillRect(0, 0, width, height);
 
+    const moonP = nightProgress(tod);
+    let moon = null;
+    if (moonP != null) {
+      moon = bodyOnArc(moonP, width, height, 26);
+    }
+
+    drawStars(scene.stars, tod, animTime, moon);
     drawCelestial(theme, tod);
+    drawClouds(scene.clouds, tod);
     drawWire(ctx, theme, scene.wireY);
 
     for (const bird of scene.birds) {
