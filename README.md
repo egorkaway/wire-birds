@@ -8,7 +8,7 @@ Open `index.html` locally, or drop the repo on [Netlify](https://www.netlify.com
 
 - **Flock size** from a single owl up to several birds, with uneven gaps so they never overlap.
 - **One owl**, always, looking at you.
-- **A crow or a seagull** when there is more than one bird. The crow is assembled from triangles; everyone else is rounder.
+- **A crow or a seagull** when there is more than one bird. The crow is assembled from triangles; seagulls come in three looks — herring, hooded, and black-backed.
 - Some of the others face the viewer.
 - **Sun and moon** travel east → west. Shuffle always moves time forward, so day turning into night goes through sunset, and night turning into day goes through sunrise. The sun stays gold, warming only as it nears the horizon.
 

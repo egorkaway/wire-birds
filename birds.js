@@ -280,7 +280,37 @@
     };
   }
 
-  function seagullPalette() {
+  function seagullLook(kind) {
+    if (kind === "hooded") {
+      return {
+        body: "#f4f1ea",
+        belly: "#ffffff",
+        head: "#3d2914",
+        wing: "#c5ced6",
+        tail: "#dfe4ea",
+        crest: "#3d2914",
+        beak: "#d62828",
+        feet: "#d62828",
+        eye: "#1d1a17",
+        beakSpot: false,
+        wingTip: false,
+      };
+    }
+    if (kind === "blackback") {
+      return {
+        body: "#2b2d42",
+        belly: "#f4f1ea",
+        head: "#f7f4ee",
+        wing: "#16161d",
+        tail: "#1a1a22",
+        crest: "#2b2d42",
+        beak: "#f4a261",
+        feet: "#e9c46a",
+        eye: "#1d1a17",
+        beakSpot: true,
+        wingTip: false,
+      };
+    }
     return {
       body: "#f4f1ea",
       belly: "#ffffff",
@@ -291,6 +321,8 @@
       beak: "#f4a261",
       feet: "#e9c46a",
       eye: "#1d1a17",
+      beakSpot: true,
+      wingTip: true,
     };
   }
 
@@ -330,6 +362,9 @@
       eyeRing: chance(rng, 0.28),
       spots: chance(rng, 0.22),
       tufts: false,
+      gullKind: null,
+      beakSpot: false,
+      wingTip: false,
       phase: rng() * Math.PI * 2,
       blinkEvery: range(rng, 2200, 5400),
       blinkOffset: rng() * 4000,
@@ -376,15 +411,37 @@
       other.bodyH = range(rng, 11, 15);
       other.scale *= 1.16;
     } else {
-      other.colors = seagullPalette();
+      other.gullKind = pick(rng, ["herring", "hooded", "blackback"]);
+      const look = seagullLook(other.gullKind);
+      other.colors = look;
+      other.beakSpot = look.beakSpot;
+      other.wingTip = look.wingTip;
       other.beakHook = false;
-      other.beakLen = range(rng, 11, 15);
-      other.beakH = range(rng, 2.2, 3);
-      other.tail = "stub";
       other.belly = true;
       other.eyeRing = true;
       other.pose = "upright";
-      other.bodyW = range(rng, 20, 26);
+      if (other.gullKind === "hooded") {
+        other.beakLen = range(rng, 9, 12);
+        other.beakH = range(rng, 1.8, 2.4);
+        other.tail = "fork";
+        other.tailLen = range(rng, 16, 22);
+        other.bodyW = range(rng, 16, 20);
+        other.bodyH = range(rng, 11, 14);
+        other.headR = range(rng, 7.5, 9.5);
+        other.scale *= 0.92;
+      } else if (other.gullKind === "blackback") {
+        other.beakLen = range(rng, 13, 17);
+        other.beakH = range(rng, 2.6, 3.4);
+        other.tail = "stub";
+        other.bodyW = range(rng, 22, 28);
+        other.bodyH = range(rng, 14, 18);
+        other.scale *= 1.22;
+      } else {
+        other.beakLen = range(rng, 11, 15);
+        other.beakH = range(rng, 2.2, 3);
+        other.tail = "stub";
+        other.bodyW = range(rng, 20, 26);
+      }
     }
   }
 
@@ -696,7 +753,7 @@
       ctx.quadraticCurveTo(bird.beakLen * 0.85, bird.beakH * 0.7, bird.beakLen * 0.55, 0);
       finish(ctx);
     }
-    if (bird.species === "seagull" && paintPass !== "halo") {
+    if (bird.beakSpot && paintPass !== "halo") {
       paint(ctx, "#e63946");
       ellipse(ctx, bird.beakLen * 0.72, bird.beakH * 0.15, 1.15, 1.15);
     }
@@ -725,7 +782,7 @@
 
     paint(ctx, bird.colors.wing);
     ellipse(ctx, bodyX + 1, bodyY + 1, bird.bodyW * 0.58, bird.bodyH * 0.36, 0.35);
-    if (bird.species === "seagull" && paintPass !== "halo") {
+    if (bird.wingTip && paintPass !== "halo") {
       paint(ctx, "#2b2d42");
       ellipse(ctx, bodyX + bird.bodyW * 0.42, bodyY + 2, 3.2, 2.1, 0.2);
     }
@@ -740,6 +797,10 @@
 
     paint(ctx, bird.colors.head);
     ellipse(ctx, hx, hy, bird.headR * (bird.species === "crow" ? 0.88 : 1), bird.headR * 0.96);
+    if (bird.gullKind === "hooded") {
+      paint(ctx, bird.colors.head);
+      ellipse(ctx, hx - 1.5, hy + bird.headR * 0.55, bird.headR * 0.9, bird.headR * 0.72);
+    }
 
     drawSideBeak(ctx, bird, hx, hy);
     drawSideEye(ctx, hx + bird.headR * 0.28, hy - bird.headR * 0.12, bird, blinkOn);
