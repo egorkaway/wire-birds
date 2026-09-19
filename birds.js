@@ -3,14 +3,27 @@
   const ctx = canvas.getContext("2d");
   const caption = document.querySelector(".caption");
   const credit = document.querySelector(".credit");
+  const isCatalog = document.body.dataset.page === "catalog";
+
+  const CATALOG_KINDS = [
+    { species: "owl" },
+    { species: "seagull", gullKind: "herring" },
+    { species: "seagull", gullKind: "blackback" },
+    { species: "seagull", gullKind: "hooded" },
+    { species: "puffin" },
+    { species: "cockatoo" },
+    { species: "robin" },
+    { species: "kingfisher" },
+    { species: "pigeon" },
+    { species: "borb" },
+    { species: "generic" },
+  ];
 
   const CURATED = [
     { body: "#f45b69", belly: "#ffd4c2", head: "#e23d4d", wing: "#c81d4e", wingBar: "#ffffff", tail: "#2ec4b6", crest: "#ffd166", beak: "#ff9f1c", feet: "#e76f51", eye: "#1d1a17", cheek: "#ffe3d8", throat: "#ffd166" },
-    { body: "#2ec4b6", belly: "#cbf3f0", head: "#1b9aaa", wing: "#147a8a", wingBar: "#f4d35e", tail: "#ff9f1c", crest: "#f4d35e", beak: "#e76f51", feet: "#c0563a", eye: "#14222a", cheek: "#e0fbf8", throat: "#ff9f1c" },
     { body: "#7b2d8e", belly: "#f4d35e", head: "#5c1a6e", wing: "#9b59b6", wingBar: "#ffffff", tail: "#f4d35e", crest: "#ef476f", beak: "#f79d65", feet: "#c97c5d", eye: "#1a1020", cheek: "#f8e1fa", throat: "#f4d35e" },
     { body: "#1d3557", belly: "#f1faee", head: "#1d3557", wing: "#457b9d", wingBar: "#a8dadc", tail: "#e63946", crest: "#a8dadc", beak: "#f4a261", feet: "#bc6c39", eye: "#0b1320", cheek: "#f1faee", throat: "#e63946" },
     { body: "#ffb703", belly: "#fff3c4", head: "#fb8500", wing: "#e09f3e", wingBar: "#219ebc", tail: "#219ebc", crest: "#8ecae6", beak: "#d62828", feet: "#bc6c25", eye: "#2b1d0e", cheek: "#fffce8", throat: "#d62828" },
-    { body: "#06d6a0", belly: "#f8ffe5", head: "#118ab2", wing: "#073b4c", wingBar: "#ffd166", tail: "#ef476f", crest: "#ffd166", beak: "#ffd166", feet: "#c0563a", eye: "#06222c", cheek: "#e0faf2", throat: "#ffd166" },
     { body: "#ef476f", belly: "#ffd6e0", head: "#d90429", wing: "#9d0208", wingBar: "#ffffff", tail: "#073b4c", crest: "#ffd166", beak: "#f4a261", feet: "#9b2226", eye: "#1b0a10", cheek: "#ffe8ee", throat: "#ffd166" },
     { body: "#4cc9f0", belly: "#f8f9fa", head: "#4361ee", wing: "#3a0ca3", wingBar: "#4cc9f0", tail: "#f72585", crest: "#4cc9f0", beak: "#ff9e00", feet: "#b5651d", eye: "#12081f", cheek: "#eaf8ff", throat: "#f72585" },
     { body: "#fae588", belly: "#fffceb", head: "#f1c453", wing: "#f9a620", wingBar: "#ffffff", tail: "#43aa8b", crest: "#f94144", beak: "#f9844a", feet: "#bc6c25", eye: "#2a1f0a", cheek: "#fffbe6", throat: "#f94144" },
@@ -46,6 +59,7 @@
   let paintPass = "paint";
   let outlineColor = "#2a2724";
   let chirpRipples = [];
+  let hoveredBird = null;
 
   let clock = {
     display: 0.42,
@@ -214,7 +228,8 @@
 
   function palette(rng) {
     if (chance(rng, 0.45)) return { ...pick(rng, CURATED) };
-    const h = rng() * 360;
+    const span = rng() * 280;
+    const h = span < 80 ? span : span + 80;
     const accent = h + range(rng, 130, 210);
     const sat = range(rng, 58, 86);
     const light = range(rng, 40, 58);
@@ -268,26 +283,8 @@
       { body: "#c4a574", belly: "#efe3c8", head: "#b08968", wing: "#7f5539", wingBar: "#efe3c8", tail: "#9c6644", crest: "#6f4518", beak: "#e9c46a", feet: "#c9a227", eye: "#1d1a17", disc: "#f3e9d7", iris: "#d4a017", cheek: "#f3e9d7", throat: "#efe3c8" },
       { body: "#8d99ae", belly: "#edf2f4", head: "#7b8799", wing: "#2b2d42", wingBar: "#edf2f4", tail: "#8d99ae", crest: "#2b2d42", beak: "#e9c46a", feet: "#c9a227", eye: "#1a1a1a", disc: "#f8f7f4", iris: "#3d5a80", cheek: "#edf2f4", throat: "#edf2f4" },
       { body: "#6d4c41", belly: "#d7ccc8", head: "#5d4037", wing: "#4e342e", wingBar: "#d7ccc8", tail: "#8d6e63", crest: "#3e2723", beak: "#f4a261", feet: "#e9c46a", eye: "#1b120c", disc: "#f5ebe0", iris: "#e76f51", cheek: "#f5ebe0", throat: "#d7ccc8" },
-      { body: "#4895ef", belly: "#eef4ff", head: "#4361ee", wing: "#3a0ca3", wingBar: "#ffffff", tail: "#4cc9f0", crest: "#f72585", beak: "#ffd166", feet: "#f4a261", eye: "#1a1020", disc: "#fff6e5", iris: "#f72585", cheek: "#eef4ff", throat: "#ffd166" },
+      { body: "#e6dcc8", belly: "#f7f1e3", head: "#d4c4a8", wing: "#c4b49a", wingBar: "#f7f1e3", tail: "#b8a888", crest: "#8a7a62", beak: "#e9c46a", feet: "#c9a227", eye: "#1d1a17", disc: "#fbf6ea", iris: "#c07840", cheek: "#fbf6ea", throat: "#f7f1e3" },
     ]);
-  }
-
-  function crowPalette() {
-    return {
-      body: "#15151c",
-      belly: "#1d1d26",
-      head: "#111116",
-      wing: "#1a1a24",
-      wingCovert: "#252433",
-      tail: "#0f0f14",
-      crest: "#15151c",
-      beak: "#0a0a0d",
-      feet: "#1a1714",
-      eye: "#f0e6c8",
-      iris: "#2e2b38",
-      cheek: "#181820",
-      throat: "#141419",
-    };
   }
 
   function seagullLook(kind) {
@@ -363,13 +360,6 @@
     };
   }
 
-  function toucanPalette(rng) {
-    return pick(rng, [
-      { body: "#111216", belly: "#111216", head: "#111216", wing: "#181920", tail: "#0e0f12", bib: "#ffb703", vent: "#d90429", billBase: "#0077b6", billMid: "#70e000", billTip: "#d90429", billRidge: "#ffb703", eyeSkin: "#48cae4", eye: "#0a0a0e", feet: "#0077b6" },
-      { body: "#15151c", belly: "#15151c", head: "#15151c", wing: "#1d1e26", tail: "#101014", bib: "#ffffff", vent: "#e63946", billBase: "#111111", billMid: "#f77f00", billTip: "#d62828", billRidge: "#fcbf49", eyeSkin: "#52b788", eye: "#0f0f14", feet: "#457b9d" },
-    ]);
-  }
-
   function cockatooPalette(rng) {
     return pick(rng, [
       { body: "#f8f9fa", belly: "#f8f9fa", head: "#ffffff", wing: "#f1f3f5", tail: "#ffffff", crest: "#ffd166", beak: "#343a40", feet: "#6c757d", eye: "#1a1a1a", cheek: "#ffe5b4" },
@@ -389,13 +379,6 @@
     return pick(rng, [
       { body: "#0077b6", belly: "#f77f00", head: "#023e8a", wing: "#03045e", wingBar: "#90e0ef", tail: "#0096c7", crest: "#03045e", beak: "#1b263b", feet: "#d62828", eye: "#0d1b2a", cheek: "#ffffff", throat: "#ffffff" },
       { body: "#06d6a0", belly: "#ef476f", head: "#118ab2", wing: "#073b4c", wingBar: "#ffd166", tail: "#118ab2", crest: "#073b4c", beak: "#1b1b1e", feet: "#ef476f", eye: "#073b4c", cheek: "#ffffff", throat: "#ffffff" },
-    ]);
-  }
-
-  function swallowPalette(rng) {
-    return pick(rng, [
-      { body: "#1d3557", belly: "#f1faee", head: "#1d3557", wing: "#0b1d3a", wingBar: "#457b9d", tail: "#0b1d3a", crest: "#1d3557", beak: "#1a1a1a", feet: "#4a4e69", eye: "#0a0a10", cheek: "#f1faee", throat: "#c1121f" },
-      { body: "#2b2d42", belly: "#edf2f4", head: "#1a1a24", wing: "#16161f", wingBar: "#8d99ae", tail: "#16161f", crest: "#2b2d42", beak: "#111111", feet: "#3a3a44", eye: "#111111", cheek: "#edf2f4", throat: "#d90429" },
     ]);
   }
 
@@ -431,7 +414,7 @@
       t,
       species: "generic",
       view,
-      facing: view === "front" ? 1 : chance(rng, 0.5) ? 1 : -1,
+      facing: view === "front" ? 1 : -1,
       scale: range(rng, 0.95, 1.38) * sizeMul,
       weight: 1.0,
       colors,
@@ -495,19 +478,17 @@
     owl.pose = chance(rng, 0.12) ? "sleeping" : "upright";
     owl.tufts = chance(rng, 0.82);
     owl.colors = owlPalette(rng);
+    applyFacing(owl);
 
     if (birds.length < 2) return;
 
     // Expanded special species list
     const specialPool = [
-      "crow",
       "seagull",
       "puffin",
-      "toucan",
       "cockatoo",
       "robin",
       "kingfisher",
-      "swallow",
       "pigeon",
       "borb",
     ];
@@ -523,12 +504,13 @@
         configureSpecies(rng, birds[order[idx]], pick(rng, remaining));
       }
     }
+
+    for (const bird of birds) applyFacing(bird);
   }
 
   function configureSpecies(rng, bird, species) {
     bird.species = species;
     bird.view = "side";
-    bird.facing = chance(rng, 0.5) ? 1 : -1;
     bird.crest = "none";
     bird.spots = false;
     bird.wingBars = 0;
@@ -537,21 +519,7 @@
     bird.neckRing = false;
     bird.neckSheen = false;
 
-    if (species === "crow") {
-      bird.colors = crowPalette();
-      bird.weight = 1.5;
-      bird.beakHook = true;
-      bird.beakLen = range(rng, 16, 22);
-      bird.beakH = range(rng, 3.2, 4.2);
-      bird.tail = "fan";
-      bird.tailLen = range(rng, 22, 30);
-      bird.belly = false;
-      bird.pose = chance(rng, 0.55) ? "hunched" : "upright";
-      bird.bodyW = range(rng, 22, 28);
-      bird.bodyH = range(rng, 13, 17);
-      bird.headR = range(rng, 10, 13);
-      bird.scale *= 1.18;
-    } else if (species === "seagull") {
+    if (species === "seagull") {
       bird.weight = 1.4;
       bird.gullKind = pick(rng, ["herring", "blackback", "hooded"]);
       bird.colors = seagullLook(bird.gullKind);
@@ -576,18 +544,6 @@
       bird.tailLen = range(rng, 10, 14);
       bird.pose = "upright";
       bird.scale *= 1.05;
-    } else if (species === "toucan") {
-      bird.weight = 1.35;
-      bird.colors = toucanPalette(rng);
-      bird.bodyW = range(rng, 20, 25);
-      bird.bodyH = range(rng, 15, 19);
-      bird.headR = range(rng, 11, 13.5);
-      bird.beakLen = range(rng, 28, 38);
-      bird.beakH = range(rng, 7.5, 10.5);
-      bird.tail = "long";
-      bird.tailLen = range(rng, 20, 28);
-      bird.pose = "upright";
-      bird.scale *= 1.15;
     } else if (species === "cockatoo") {
       bird.weight = 1.25;
       bird.colors = cockatooPalette(rng);
@@ -617,43 +573,28 @@
     } else if (species === "kingfisher") {
       bird.weight = 1.15;
       bird.colors = kingfisherPalette(rng);
-      bird.beakLen = range(rng, 20, 28);
-      bird.beakH = range(rng, 3.4, 4.6);
+      bird.beakLen = range(rng, 16, 22);
+      bird.beakH = range(rng, 4.2, 5.6);
       bird.beakHook = false;
       bird.crest = "dagger";
       bird.neckRing = true;
       bird.tail = "stub";
-      bird.tailLen = range(rng, 10, 14);
-      bird.bodyW = range(rng, 18, 22);
-      bird.bodyH = range(rng, 14, 17);
-      bird.headR = range(rng, 10, 12.5);
-      bird.lean = -0.05;
-      bird.belly = true;
-    } else if (species === "swallow") {
-      bird.weight = 0.65;
-      bird.colors = swallowPalette(rng);
-      bird.beakLen = range(rng, 5.5, 8);
-      bird.beakH = range(rng, 1.8, 2.3);
-      bird.beakHook = false;
-      bird.tail = "scissor";
-      bird.tailLen = range(rng, 26, 36);
-      bird.bodyW = range(rng, 21, 26);
-      bird.bodyH = range(rng, 9, 12);
-      bird.headR = range(rng, 7.5, 9.2);
-      bird.lean = -0.26;
-      bird.throatBib = true;
-      bird.wingBars = 1;
+      bird.tailLen = range(rng, 14, 18);
+      bird.bodyW = range(rng, 16, 20);
+      bird.bodyH = range(rng, 15, 18);
+      bird.headR = range(rng, 11, 13.5);
+      bird.lean = 0;
       bird.belly = true;
     } else if (species === "pigeon") {
       bird.weight = 1.6;
       bird.colors = pigeonPalette(rng);
       bird.beakLen = range(rng, 7, 10);
       bird.beakH = range(rng, 2.2, 3.0);
-      bird.bodyW = range(rng, 23, 29);
-      bird.bodyH = range(rng, 16, 21);
-      bird.headR = range(rng, 8.5, 10.5);
+      bird.bodyW = range(rng, 18, 23);
+      bird.bodyH = range(rng, 17, 21);
+      bird.headR = range(rng, 8.8, 11);
       bird.tail = "fan";
-      bird.tailLen = range(rng, 18, 24);
+      bird.tailLen = range(rng, 10, 14);
       bird.neckSheen = true;
       bird.wingBars = 2;
       bird.belly = true;
@@ -673,27 +614,44 @@
       bird.belly = true;
       bird.scale *= 0.95;
     }
+
+    if (["kingfisher", "pigeon"].includes(species)) {
+      bird.view = "front";
+    }
+    applyFacing(bird);
+  }
+
+  function applyFacing(bird) {
+    bird.facing = bird.view === "front" ? 1 : -1;
+  }
+
+  function speciesName(bird) {
+    if (bird.species === "seagull") {
+      if (bird.gullKind === "herring") return "herring gull";
+      if (bird.gullKind === "blackback") return "black-backed gull";
+      if (bird.gullKind === "hooded") return "hooded gull";
+      return "gull";
+    }
+    const names = {
+      owl: "owl",
+      puffin: "puffin",
+      cockatoo: "cockatoo",
+      robin: "robin",
+      kingfisher: "kingfisher",
+      pigeon: "pigeon",
+      borb: "borb",
+      generic: "songbird",
+    };
+    return names[bird.species] || bird.species;
   }
 
   function estimatedWidth(bird) {
     const s = bird.scale;
     if (bird.species === "owl" || bird.view === "front") {
-      return s * Math.max(bird.headR * 2.6, bird.bodyW * 1.7) + 20;
-    }
-    if (bird.species === "toucan") {
-      return s * (bird.bodyW * 1.8 + bird.beakLen * 0.95) + 26;
-    }
-    if (bird.species === "crow") {
-      return s * (bird.bodyW * 2.1 + bird.tailLen * 0.6 + bird.beakLen * 0.7) + 24;
+      return s * Math.max(bird.headR * 2.6, bird.bodyW * 1.85) + 22;
     }
     if (bird.species === "seagull") {
       return s * (bird.bodyW * 2.0 + bird.tailLen * 0.5 + bird.beakLen * 0.6) + 22;
-    }
-    if (bird.species === "kingfisher") {
-      return s * (bird.bodyW * 1.9 + bird.beakLen * 0.8) + 22;
-    }
-    if (bird.species === "swallow") {
-      return s * (bird.bodyW * 1.8 + bird.tailLen * 0.6) + 22;
     }
     return s * (bird.bodyW * 1.8 + bird.tailLen * 0.4 + bird.beakLen * 0.45) + 20;
   }
@@ -764,7 +722,7 @@
     for (let i = 0; i < starCount; i += 1) {
       stars.push({
         x: rng() * w,
-        y: h * 0.48 * rng() ** 1.35,
+        y: h * (isCatalog ? 0.92 : 0.48) * rng() ** 1.35,
         r: 0.55 + rng() * 1.55,
         tw: rng() * Math.PI * 2,
         bright: 0.4 + rng() * 0.6,
@@ -797,7 +755,79 @@
     return { stars, clouds };
   }
 
+  function catalogLayout(w) {
+    const perWire = w < 640 ? 2 : w < 980 ? 3 : 4;
+    const wireCount = Math.ceil(CATALOG_KINDS.length / perWire);
+    const top = 150;
+    const wireGap = 250;
+    const bottom = 220;
+    return {
+      perWire,
+      wireCount,
+      top,
+      wireGap,
+      height: top + (wireCount - 1) * wireGap + bottom,
+    };
+  }
+
+  function skySpan() {
+    return isCatalog ? Math.min(height, window.innerHeight) : height;
+  }
+
+  function wireYOf(bird) {
+    return bird.wireY != null ? bird.wireY : scene.wireY;
+  }
+
+  function createCatalogScene(currentSeed, w, h) {
+    const rng = mulberry32(currentSeed);
+    const sizeMul = Math.min(1.15, Math.max(0.78, w / 920));
+    const layout = catalogLayout(w);
+    const birds = CATALOG_KINDS.map((kind) => {
+      const bird = makeBird(rng, 0.5, sizeMul);
+      if (kind.species === "owl") {
+        bird.species = "owl";
+        bird.view = "front";
+        bird.scale *= 1.18;
+        bird.weight = 1.8;
+        bird.bodyW = range(rng, 16, 20);
+        bird.bodyH = range(rng, 14, 18);
+        bird.headR = range(rng, 13, 16);
+        bird.pose = chance(rng, 0.12) ? "sleeping" : "upright";
+        bird.tufts = chance(rng, 0.82);
+        bird.colors = owlPalette(rng);
+      } else if (kind.species === "generic") {
+        bird.view = "side";
+      } else {
+        configureSpecies(rng, bird, kind.species);
+        if (kind.gullKind) {
+          bird.gullKind = kind.gullKind;
+          bird.colors = seagullLook(kind.gullKind);
+        }
+      }
+      applyFacing(bird);
+      return bird;
+    });
+
+    for (let row = 0; row < layout.wireCount; row += 1) {
+      const group = birds.slice(row * layout.perWire, (row + 1) * layout.perWire);
+      const y = layout.top + row * layout.wireGap;
+      for (const bird of group) bird.wireY = y;
+      placeAlongWire(rng, group, w);
+    }
+
+    const weather = makeWeather(rng, w, h);
+    chirpRipples = [];
+    return {
+      seed: currentSeed,
+      wireY: layout.top,
+      birds,
+      stars: weather.stars,
+      clouds: weather.clouds,
+    };
+  }
+
   function createScene(currentSeed, w, h) {
+    if (isCatalog) return createCatalogScene(currentSeed, w, h);
     const rng = mulberry32(currentSeed);
     const sizeMul = Math.min(1.2, Math.max(0.72, w / 920));
     const maxCount = Math.max(1, Math.min(8, Math.floor((w - 72) / 92)));
@@ -805,12 +835,14 @@
     const birds = Array.from({ length: count }, () => makeBird(rng, 0.5, sizeMul));
     assignSpecials(rng, birds);
     placeAlongWire(rng, birds, w);
+    const wireY = h * 0.58;
+    for (const bird of birds) bird.wireY = wireY;
     const weather = makeWeather(rng, w, h);
     chirpRipples = [];
 
     return {
       seed: currentSeed,
-      wireY: h * 0.58,
+      wireY,
       birds,
       stars: weather.stars,
       clouds: weather.clouds,
@@ -871,6 +903,7 @@
         born: now,
         duration: 1300,
         maxR: 20 * bird.scale,
+        dir: bird.view === "front" ? 1 : bird.facing,
       });
     }
   }
@@ -893,11 +926,16 @@
       ctx.strokeStyle = theme.ink;
       ctx.lineWidth = 1.4;
       ctx.globalAlpha = alpha;
+      const left = r.dir < 0;
+      const a0 = left ? Math.PI * 0.7 : -Math.PI * 0.45;
+      const a1 = left ? Math.PI * 1.45 : Math.PI * 0.3;
+      const b0 = left ? Math.PI * 0.75 : -Math.PI * 0.4;
+      const b1 = left ? Math.PI * 1.4 : Math.PI * 0.25;
       ctx.beginPath();
-      ctx.arc(r.x, r.y + dy, currentR, -Math.PI * 0.45, Math.PI * 0.3);
+      ctx.arc(r.x, r.y + dy, currentR, a0, a1);
       ctx.stroke();
       ctx.beginPath();
-      ctx.arc(r.x, r.y + dy, currentR * 0.6, -Math.PI * 0.4, Math.PI * 0.25);
+      ctx.arc(r.x, r.y + dy, currentR * 0.6, b0, b1);
       ctx.stroke();
     }
     ctx.restore();
@@ -983,6 +1021,65 @@
     } else {
       // stub
       teardrop(ctx, ax, ay, tailLen * 0.38, 4.4, back);
+    }
+  }
+
+  function hangingTailTwitch(bird, now) {
+    if (bird.lastTwitchStart && now - bird.lastTwitchStart < 140) {
+      return Math.sin(((now - bird.lastTwitchStart) / 140) * Math.PI * 2) * 0.12;
+    }
+    return 0;
+  }
+
+  function drawHangingTail(ctx, bird, now, bodyY) {
+    const twitch = hangingTailTwitch(bird, now);
+    const originY = bodyY + bird.bodyH * 0.18;
+    const down = Math.PI / 2 + twitch;
+    const toWire = Math.max(8, -originY);
+    const below =
+      bird.tail === "scissor"
+        ? bird.tailLen * 0.92
+        : bird.tail === "fan"
+          ? bird.tailLen * 0.55
+          : bird.tail === "cocked"
+            ? bird.tailLen * 0.42
+            : bird.tailLen * 0.5;
+    const len = toWire + below;
+    paint(ctx, bird.colors.tail);
+
+    if (bird.tail === "scissor") {
+      teardrop(ctx, -1.1, originY, len, 2.35, down - 0.42);
+      teardrop(ctx, 1.1, originY, len, 2.35, down + 0.42);
+      teardrop(ctx, 0, originY, toWire + below * 0.28, 3.4, down);
+    } else if (bird.tail === "fan") {
+      const n = 5;
+      for (let i = 0; i < n; i += 1) {
+        teardrop(ctx, 0, originY, len, 3.1, down + rangeSpread(i, n, 0.55));
+      }
+    } else if (bird.tail === "cocked") {
+      teardrop(ctx, 1.2, originY, len, 3.5, down + 0.38);
+      teardrop(ctx, 0.3, originY, toWire + below * 0.75, 2.7, down + 0.18);
+    } else {
+      teardrop(ctx, 0, originY, len, 4.0, down);
+      teardrop(ctx, -1.1, originY, toWire + below * 0.82, 2.8, down - 0.16);
+      teardrop(ctx, 1.1, originY, toWire + below * 0.82, 2.8, down + 0.16);
+    }
+  }
+
+  function drawFrontWings(ctx, bird, bodyY, spread = null) {
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+    const x = spread == null ? w * 0.55 : spread;
+    paint(ctx, bird.colors.wing);
+    ellipse(ctx, -x, bodyY + 1, w * 0.34, h * 0.58, -0.38);
+    ellipse(ctx, x, bodyY + 1, w * 0.34, h * 0.58, 0.38);
+    if (paintPass === "halo" || !(bird.wingBars > 0 && bird.colors.wingBar)) return;
+    paint(ctx, bird.colors.wingBar);
+    ellipse(ctx, -x, bodyY + 2, w * 0.18, 1.25, -0.38);
+    ellipse(ctx, x, bodyY + 2, w * 0.18, 1.25, 0.38);
+    if (bird.wingBars > 1) {
+      ellipse(ctx, -x, bodyY + 5.2, w * 0.2, 1.15, -0.38);
+      ellipse(ctx, x, bodyY + 5.2, w * 0.2, 1.15, 0.38);
     }
   }
 
@@ -1172,88 +1269,100 @@
 
   // --- Specialized Species Renderers ---
 
-  // 1. Upgraded Realistic Corvid / Crow
-  function drawCrow(ctx, bird, now, time) {
-    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
-    const hunched = bird.pose === "hunched" || bird.pose === "sleeping";
+  function drawKingfisher(ctx, bird, now, time) {
+    const { blinkOn, bodyY } = beginPerch(ctx, bird, now, time);
     const w = bird.bodyW;
     const h = bird.bodyH;
 
-    // Diamond wedge tail
-    paint(ctx, bird.colors.tail);
-    teardrop(ctx, bodyX - w * 0.75, bodyY + h * 0.1, bird.tailLen * 0.95, 4.2, Math.PI + 0.25);
-    teardrop(ctx, bodyX - w * 0.75, bodyY + h * 0.1, bird.tailLen * 0.78, 3.2, Math.PI + 0.05);
+    drawHangingTail(ctx, bird, now, bodyY);
 
-    drawFoot(ctx, -5.2, bird.colors, "side");
-
-    // Deep obsidian body
     paint(ctx, bird.colors.body);
-    ellipse(ctx, bodyX, bodyY, w * 0.92, h * 0.95, hunched ? -0.05 : -0.15);
-
-    // Layered primary flight feathers extending past the back
-    paint(ctx, bird.colors.wingCovert);
-    ellipse(ctx, bodyX - w * 0.15, bodyY - h * 0.15, w * 0.48, h * 0.38, 0.32);
-
-    paint(ctx, bird.colors.wing);
-    teardrop(ctx, bodyX - w * 0.1, bodyY - h * 0.1, w * 1.15, 4.8, 0.45);
-    teardrop(ctx, bodyX - w * 0.18, bodyY - h * 0.02, w * 1.05, 3.8, 0.38);
-
-    drawFoot(ctx, 4.8, bird.colors, "side");
-
-    const hx = bodyX + w * 0.48;
-    const hy = bodyY - h * (hunched ? 0.32 : 0.58) + (bird.pose === "lookingUp" ? -4 : 0);
-
-    ctx.save();
-    ctx.translate(hx, hy);
-    ctx.rotate((bird.saccadeAngle || 0) * 0.6);
-
-    // Shaggy throat hackles
-    paint(ctx, bird.colors.throat);
-    teardrop(ctx, bird.headR * 0.2, bird.headR * 0.65, bird.headR * 0.95, 3.2, 1.45);
-    teardrop(ctx, bird.headR * 0.05, bird.headR * 0.8, bird.headR * 0.75, 2.8, 1.85);
-
-    // Corvid Head
-    paint(ctx, bird.colors.head);
-    ellipse(ctx, 0, 0, bird.headR * 0.95, bird.headR * 0.9);
-
-    // Arched Corvid Beak
-    const beakLen = bird.beakLen;
-    const beakH = bird.beakH;
-    paint(ctx, bird.colors.beak);
-    ctx.beginPath();
-    ctx.moveTo(bird.headR * 0.65, -beakH * 0.7);
-    ctx.quadraticCurveTo(bird.headR * 0.65 + beakLen * 0.65, -beakH * 0.9, bird.headR * 0.65 + beakLen, beakH * 0.5);
-    ctx.quadraticCurveTo(bird.headR * 0.65 + beakLen * 0.4, beakH * 1.1, bird.headR * 0.65, beakH * 0.9);
-    ctx.closePath();
-    finish(ctx);
-
-    // Nasal bristles at beak base
+    ellipse(ctx, 0, bodyY, w * 0.78, h * 1.05);
     if (paintPass !== "halo") {
-      paint(ctx, "#1c1c24");
-      teardrop(ctx, bird.headR * 0.68, -beakH * 0.55, 4.5, 1.6, 0.3);
+      paint(ctx, bird.colors.belly);
+      ellipse(ctx, 0, bodyY + h * 0.28, w * 0.5, h * 0.62);
     }
 
-    // Corvid Eye
-    const ex = bird.headR * 0.24;
-    const ey = -bird.headR * 0.08;
+    drawFrontWings(ctx, bird, bodyY, w * 0.58);
+    drawFoot(ctx, -6.8, bird.colors, "front");
+    drawFoot(ctx, 6.8, bird.colors, "front");
+
+    const hy = bodyY - h * 0.52;
+    ctx.save();
+    ctx.translate(0, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    paint(ctx, bird.colors.crest);
+    teardrop(ctx, -3.2, -bird.headR * 0.55, bird.headR * 1.15, 2.7, -Math.PI / 2 - 0.32);
+    teardrop(ctx, 0, -bird.headR * 0.72, bird.headR * 1.35, 3.1, -Math.PI / 2);
+    teardrop(ctx, 3.2, -bird.headR * 0.55, bird.headR * 1.1, 2.5, -Math.PI / 2 + 0.32);
+
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.08, bird.headR * 0.98);
+
     if (paintPass !== "halo") {
-      if (bird.pose === "sleeping" || blinkOn) {
-        ctx.strokeStyle = "#4a4855";
-        ctx.lineWidth = 1.5;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.arc(ex, ey, 2.2, 0.15, Math.PI - 0.15);
-        ctx.stroke();
-      } else {
-        paint(ctx, bird.colors.eye);
-        ellipse(ctx, ex, ey, 2.6, 2.6);
-        paint(ctx, "#101014");
-        ellipse(ctx, ex + 0.3, ey, 1.45, 1.45);
+      paint(ctx, bird.colors.cheek);
+      ellipse(ctx, -bird.headR * 0.52, bird.headR * 0.12, bird.headR * 0.38, bird.headR * 0.3);
+      ellipse(ctx, bird.headR * 0.52, bird.headR * 0.12, bird.headR * 0.38, bird.headR * 0.3);
+      if (bird.neckRing) {
         paint(ctx, "#ffffff");
-        ellipse(ctx, ex - 0.6, ey - 0.7, 0.7, 0.7);
+        ellipse(ctx, 0, bird.headR * 0.82, bird.headR * 0.78, 2.3);
       }
     }
 
+    paint(ctx, bird.colors.beak);
+    poly(ctx, [
+      [-2.4, bird.headR * 0.18],
+      [0, bird.headR * 0.18 + bird.beakH * 2.6],
+      [2.4, bird.headR * 0.18],
+    ]);
+
+    drawFrontEyes(ctx, -1.2, bird.headR * 0.36, 2.5, bird, blinkOn);
+    ctx.restore();
+    ctx.restore();
+  }
+
+  function drawPigeon(ctx, bird, now, time) {
+    const { blinkOn, bodyY } = beginPerch(ctx, bird, now, time);
+    const w = bird.bodyW;
+    const h = bird.bodyH;
+
+    drawHangingTail(ctx, bird, now, bodyY);
+
+    paint(ctx, bird.colors.body);
+    ellipse(ctx, 0, bodyY, w * 0.82, h * 1.08);
+    if (paintPass !== "halo") {
+      paint(ctx, bird.colors.belly);
+      ellipse(ctx, 0, bodyY + h * 0.28, w * 0.5, h * 0.58);
+    }
+
+    drawFrontWings(ctx, bird, bodyY, w * 0.6);
+    drawFoot(ctx, -7.4, bird.colors, "front");
+    drawFoot(ctx, 7.4, bird.colors, "front");
+
+    const hy = bodyY - h * 0.48;
+    ctx.save();
+    ctx.translate(0, hy);
+    ctx.rotate(bird.saccadeAngle || 0);
+
+    if (paintPass !== "halo" && bird.neckSheen) {
+      paint(ctx, bird.colors.throat);
+      ellipse(ctx, -bird.headR * 0.55, bird.headR * 0.7, 3.4, 4.2, 0.35);
+      ellipse(ctx, bird.headR * 0.55, bird.headR * 0.7, 3.4, 4.2, -0.35);
+    }
+
+    paint(ctx, bird.colors.head);
+    ellipse(ctx, 0, 0, bird.headR * 1.02, bird.headR * 0.96);
+
+    paint(ctx, bird.colors.beak);
+    ellipse(ctx, 0, bird.headR * 0.42, 2.6, 2.1);
+    poly(ctx, [
+      [-2.1, bird.headR * 0.48],
+      [0, bird.headR * 0.48 + bird.beakH * 1.7],
+      [2.1, bird.headR * 0.48],
+    ]);
+
+    drawFrontEyes(ctx, -0.6, bird.headR * 0.34, 2.35, bird, blinkOn);
     ctx.restore();
     ctx.restore();
   }
@@ -1274,19 +1383,17 @@
     paint(ctx, bird.colors.body);
     ellipse(ctx, bodyX, bodyY, w * 0.88, h * 0.92, -0.12);
 
-    // Wing Mantle
+    // Folded wing sits on the back — mantle, then black primaries toward the tail
     paint(ctx, bird.colors.wing);
-    ellipse(ctx, bodyX - w * 0.05, bodyY - h * 0.05, w * 0.55, h * 0.42, 0.32);
+    ellipse(ctx, bodyX - w * 0.18, bodyY - h * 0.02, w * 0.48, h * 0.36, 0.38);
 
-    // Black primary wing tip with white mirror spots
     paint(ctx, bird.colors.wingTip);
-    teardrop(ctx, bodyX - w * 0.05, bodyY + 1, w * 0.95, 4.2, 0.42);
+    teardrop(ctx, bodyX - w * 0.22, bodyY + h * 0.12, w * 0.52, 3.4, Math.PI + 0.28);
 
     if (paintPass !== "halo" && !bird.colors.hood) {
-      // White "mirrors" on primary flight feathers
       paint(ctx, "#ffffff");
-      ellipse(ctx, bodyX + w * 0.65, bodyY + h * 0.45, 1.6, 1.2, 0.3);
-      ellipse(ctx, bodyX + w * 0.52, bodyY + h * 0.35, 1.3, 1.0, 0.3);
+      ellipse(ctx, bodyX - w * 0.58, bodyY + h * 0.22, 1.5, 1.1, 0.2);
+      ellipse(ctx, bodyX - w * 0.46, bodyY + h * 0.14, 1.2, 0.9, 0.2);
     }
 
     drawFoot(ctx, 4.5, bird.colors, "side");
@@ -1447,101 +1554,6 @@
         paint(ctx, "#111116");
         poly(ctx, [[ex - 1.0, ey - 3.2], [ex + 1.0, ey - 3.2], [ex, ey - 5.5]]);
         poly(ctx, [[ex - 0.8, ey + 3.2], [ex + 0.8, ey + 3.2], [ex, ey + 4.8]]);
-      }
-    }
-
-    ctx.restore();
-    ctx.restore();
-  }
-
-  // 4. The Toucan
-  function drawToucan(ctx, bird, now, time) {
-    const { blinkOn, bodyX, bodyY } = beginPerch(ctx, bird, now, time);
-    const w = bird.bodyW;
-    const h = bird.bodyH;
-
-    // Tail & Red vent
-    paint(ctx, bird.colors.tail);
-    teardrop(ctx, bodyX - w * 0.72, bodyY + h * 0.1, bird.tailLen * 0.9, 4.4, Math.PI + 0.28);
-    paint(ctx, bird.colors.vent);
-    ellipse(ctx, bodyX - w * 0.55, bodyY + h * 0.3, 3.8, 3.2);
-
-    drawFoot(ctx, -5.2, bird.colors, "side");
-
-    // Obsidian Body
-    paint(ctx, bird.colors.body);
-    ellipse(ctx, bodyX, bodyY, w * 0.88, h * 0.95, -0.15);
-
-    // Wing
-    paint(ctx, bird.colors.wing);
-    ellipse(ctx, bodyX - w * 0.05, bodyY, w * 0.52, h * 0.38, 0.35);
-
-    drawFoot(ctx, 4.8, bird.colors, "side");
-
-    const hx = bodyX + w * 0.48;
-    const hy = bodyY - h * 0.52 + (bird.pose === "lookingUp" ? -4 : 0);
-
-    ctx.save();
-    ctx.translate(hx, hy);
-    ctx.rotate(bird.saccadeAngle || 0);
-
-    // Black Head
-    paint(ctx, bird.colors.head);
-    ellipse(ctx, 0, 0, bird.headR * 1.05, bird.headR * 0.95);
-
-    // Bright Chest Bib
-    if (paintPass !== "halo") {
-      paint(ctx, bird.colors.bib);
-      ellipse(ctx, bird.headR * 0.4, bird.headR * 0.6, bird.headR * 0.62, bird.headR * 0.75, 0.35);
-    }
-
-    // Giant Banana Toucan Bill
-    const blen = bird.beakLen;
-    const bh = bird.beakH;
-    const bx = bird.headR * 0.65;
-
-    // Main bill body
-    paint(ctx, bird.colors.billMid);
-    ctx.beginPath();
-    ctx.moveTo(bx, -bh * 0.5);
-    ctx.quadraticCurveTo(bx + blen * 0.5, -bh * 0.9, bx + blen, bh * 0.4);
-    ctx.quadraticCurveTo(bx + blen * 0.6, bh * 0.95, bx, bh * 0.65);
-    ctx.closePath();
-    finish(ctx);
-
-    if (paintPass !== "halo") {
-      // Crimson Tip
-      paint(ctx, bird.colors.billTip);
-      ctx.beginPath();
-      ctx.moveTo(bx + blen * 0.65, -bh * 0.6);
-      ctx.quadraticCurveTo(bx + blen * 0.85, -bh * 0.3, bx + blen, bh * 0.4);
-      ctx.quadraticCurveTo(bx + blen * 0.75, bh * 0.75, bx + blen * 0.58, bh * 0.5);
-      ctx.closePath();
-      finish(ctx);
-
-      // Black/Turquoise Base Band
-      paint(ctx, bird.colors.billBase);
-      poly(ctx, [[bx, -bh * 0.52], [bx + 4.5, -bh * 0.55], [bx + 3.8, bh * 0.68], [bx, bh * 0.65]]);
-    }
-
-    // Blue Orbital Eye Skin
-    const ex = bird.headR * 0.22;
-    const ey = -bird.headR * 0.05;
-    if (paintPass !== "halo") {
-      paint(ctx, bird.colors.eyeSkin);
-      ellipse(ctx, ex, ey, 4.2, 4.2);
-
-      if (bird.pose === "sleeping" || blinkOn) {
-        ctx.strokeStyle = "#101014";
-        ctx.lineWidth = 1.6;
-        ctx.beginPath();
-        ctx.arc(ex, ey, 2.2, 0.15, Math.PI - 0.15);
-        ctx.stroke();
-      } else {
-        paint(ctx, bird.colors.eye);
-        ellipse(ctx, ex, ey, 2.2, 2.2);
-        paint(ctx, "#ffffff");
-        ellipse(ctx, ex - 0.5, ey - 0.6, 0.6, 0.6);
       }
     }
 
@@ -1804,8 +1816,12 @@
       drawOwl(ctx, bird, now, time);
       return;
     }
-    if (bird.species === "crow") {
-      drawCrow(ctx, bird, now, time);
+    if (bird.species === "kingfisher") {
+      drawKingfisher(ctx, bird, now, time);
+      return;
+    }
+    if (bird.species === "pigeon") {
+      drawPigeon(ctx, bird, now, time);
       return;
     }
     if (bird.species === "seagull") {
@@ -1814,10 +1830,6 @@
     }
     if (bird.species === "puffin") {
       drawPuffin(ctx, bird, now, time);
-      return;
-    }
-    if (bird.species === "toucan") {
-      drawToucan(ctx, bird, now, time);
       return;
     }
     if (bird.species === "cockatoo") {
@@ -1841,27 +1853,6 @@
     drawBirdShape(ctx, bird, now, time);
     paintPass = "paint";
     drawBirdShape(ctx, bird, now, time);
-
-    // Atmospheric rim lighting for sunrise/sunset or moonlit silhouettes
-    const sunP = dayProgress(tod);
-    const moonP = nightProgress(tod);
-    const isTwilight = sunP != null && Math.sin(Math.PI * sunP) < 0.35;
-    const isNight = moonP != null;
-
-    if (isTwilight || isNight) {
-      ctx.save();
-      const flip = bird.view === "front" ? 1 : bird.facing;
-      ctx.scale(flip * bird.scale, bird.scale);
-      ctx.globalCompositeOperation = "screen";
-      ctx.globalAlpha = isTwilight ? 0.32 : 0.22;
-      ctx.fillStyle = isTwilight ? "#ffba08" : "#d8e2dc";
-      ctx.beginPath();
-      ctx.arc(0, -bird.bodyH * 1.5, bird.headR * 0.85, -Math.PI * 0.8, -Math.PI * 0.2);
-      ctx.lineWidth = 1.6;
-      ctx.strokeStyle = isTwilight ? "#ffba08" : "#d8e2dc";
-      ctx.stroke();
-      ctx.restore();
-    }
   }
 
   function drawStars(stars, tod, animTime, moon) {
@@ -1914,7 +1905,7 @@
     const moonP = nightProgress(tod);
 
     if (sunP != null) {
-      const pos = bodyOnArc(sunP, width, height, 30);
+      const pos = bodyOnArc(sunP, width, skySpan(), 30);
       const altitude = Math.sin(Math.PI * sunP);
       const glow = Math.max(0, 1 - altitude);
       if (glow > 0.05) {
@@ -1932,7 +1923,7 @@
     }
 
     if (moonP != null) {
-      const pos = bodyOnArc(moonP, width, height, 26);
+      const pos = bodyOnArc(moonP, width, skySpan(), 26);
       const fade = Math.min(1, Math.sin(Math.PI * moonP) / 0.18);
       ctx.globalAlpha = Math.max(0, fade);
       ctx.fillStyle = MOON_COLOR;
@@ -1957,17 +1948,19 @@
     const moonP = nightProgress(tod);
     let moon = null;
     if (moonP != null) {
-      moon = bodyOnArc(moonP, width, height, 26);
+      moon = bodyOnArc(moonP, width, skySpan(), 26);
     }
 
     drawStars(scene.stars, tod, animTime, moon);
     drawCelestial(theme, tod);
     drawClouds(scene.clouds, tod);
-    drawWire(ctx, theme, width, scene.wireY);
+
+    const wireYs = [...new Set(scene.birds.map(wireYOf))];
+    for (const y of wireYs) drawWire(ctx, theme, width, y);
 
     for (const bird of scene.birds) {
       const birdX = bird.t * width;
-      const wireY = scene.wireY;
+      const wireY = wireYOf(bird);
       updateBirdBehaviors(bird, now, animTime, wireY, tod);
 
       ctx.save();
@@ -1977,11 +1970,40 @@
     }
 
     drawChirpRipples(ctx, now, theme);
+
+    if (isCatalog) {
+      for (const bird of scene.birds) drawSpeciesLabel(ctx, bird, theme);
+    } else if (hoveredBird) {
+      drawSpeciesLabel(ctx, hoveredBird, theme);
+    }
+  }
+
+  function drawSpeciesLabel(ctx, bird, theme) {
+    const x = bird.t * width;
+    const hang = bird.view === "front" ? bird.tailLen * bird.scale * 0.72 : 0;
+    const y = wireYOf(bird) + 18 + hang;
+    const name = speciesName(bird);
+    ctx.save();
+    ctx.font = "600 12px 'Avenir Next', 'Segoe UI', sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const padX = 8;
+    const h = 20;
+    const w = ctx.measureText(name).width + padX * 2;
+    const rx = x - w / 2;
+    ctx.beginPath();
+    if (typeof ctx.roundRect === "function") ctx.roundRect(rx, y, w, h, 9);
+    else ctx.rect(rx, y, w, h);
+    ctx.fillStyle = theme.night ? "rgba(11, 16, 32, 0.62)" : "rgba(255, 252, 246, 0.82)";
+    ctx.fill();
+    ctx.fillStyle = theme.ink;
+    ctx.fillText(name, x, y + h / 2);
+    ctx.restore();
   }
 
   function resize() {
     width = window.innerWidth;
-    height = window.innerHeight;
+    height = isCatalog ? catalogLayout(width).height : window.innerHeight;
     const dpr = window.devicePixelRatio || 1;
     canvas.width = Math.floor(width * dpr);
     canvas.height = Math.floor(height * dpr);
@@ -1990,6 +2012,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ensureClock(seed);
     scene = createScene(seed, width, height);
+    hoveredBird = null;
     applyTheme(themeAt(clock.display));
   }
 
@@ -2007,35 +2030,40 @@
     seed = (Math.random() * 0xffffffff) >>> 0;
     history.replaceState(null, "", `#${seed}`);
     scene = createScene(seed, width, height);
+    hoveredBird = null;
     advanceClock(now, mulberry32(seed));
   }
 
-  // --- Touch & Click Hit Testing ---
-  function handlePointerTap(clientX, clientY) {
-    if (!scene) return;
+  function canvasPoint(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    const px = clientX - rect.left;
-    const py = clientY - rect.top;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
 
-    // Hit test against birds
-    for (const bird of scene.birds) {
+  function birdAt(px, py) {
+    if (!scene) return null;
+    for (let i = scene.birds.length - 1; i >= 0; i -= 1) {
+      const bird = scene.birds[i];
       const bx = bird.t * width;
-      const by = scene.wireY;
+      const by = wireYOf(bird);
       const s = bird.scale;
       const hitW = 34 * s;
-      const hitTop = by - 52 * s;
-      const hitBottom = by + 16 * s;
-
-      if (px >= bx - hitW && px <= bx + hitW && py >= hitTop && py <= hitBottom) {
-        // Tapped a bird!
-        bird.hopVelocity = -4.5;
-        bird.pose = bird.pose === "sleeping" ? "upright" : "singing";
-        bird.lastChirpTime = 0; // trigger immediate chirp ripple
-        return;
+      const hang = bird.view === "front" ? Math.max(16, bird.tailLen * 0.85) * s : 16 * s;
+      if (px >= bx - hitW && px <= bx + hitW && py >= by - 52 * s && py <= by + hang) {
+        return bird;
       }
     }
+    return null;
+  }
 
-    // Tapped sky / wire -> shuffle
+  function handlePointerTap(clientX, clientY) {
+    const { x, y } = canvasPoint(clientX, clientY);
+    const bird = birdAt(x, y);
+    if (bird) {
+      bird.hopVelocity = -4.5;
+      bird.pose = bird.pose === "sleeping" ? "upright" : "singing";
+      bird.lastChirpTime = 0;
+      return;
+    }
     shuffle();
   }
 
@@ -2064,6 +2092,14 @@
     handlePointerTap(e.clientX, e.clientY);
   });
 
+  canvas.addEventListener("mousemove", (e) => {
+    const { x, y } = canvasPoint(e.clientX, e.clientY);
+    hoveredBird = birdAt(x, y);
+  });
+  canvas.addEventListener("mouseleave", () => {
+    hoveredBird = null;
+  });
+
   window.addEventListener("keydown", (event) => {
     if (event.code === "Space" || event.key === " ") {
       event.preventDefault();
@@ -2074,6 +2110,7 @@
   window.addEventListener("hashchange", () => {
     seed = readSeed();
     scene = createScene(seed, width, height);
+    hoveredBird = null;
   });
 
   history.replaceState(null, "", `#${seed}`);

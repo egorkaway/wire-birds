@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wire Birds</title>
+    <title>Every kind — Wire Birds</title>
     <style>
       :root {
         color-scheme: light;
@@ -14,8 +14,9 @@
       html,
       body {
         margin: 0;
-        height: 100%;
-        overflow: hidden;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
         background: #f4efe6;
         font-family: "Avenir Next", "Segoe UI", sans-serif;
         -webkit-user-select: none;
@@ -25,7 +26,6 @@
       canvas {
         display: block;
         width: 100%;
-        height: 100%;
         cursor: pointer;
       }
       .caption {
@@ -86,12 +86,12 @@
       }
     </style>
   </head>
-  <body>
-    <canvas id="scene" aria-label="Procedurally generated birds sitting on a wire"></canvas>
+  <body data-page="catalog">
+    <canvas id="scene" aria-label="Every bird kind perched on several wires"></canvas>
     <div class="caption">
-      <h1>birds on a wire</h1>
-      <p>tap birds to chirp • tap sky or space to shuffle</p>
-      <p><a href="catalog.html">see every kind</a></p>
+      <h1>every kind</h1>
+      <p>scroll the wires • tap birds to chirp</p>
+      <p><a href="index.html">back to the wire</a></p>
     </div>
     <p class="credit">
       a design exploration for <a href="https://sovnik.com">sovnik.com</a>
